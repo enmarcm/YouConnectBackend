@@ -24,6 +24,7 @@ class TSGooseHandler implements TSGooseHandlerProps {
   private async connectToDB() {
     try {
       await mongoose.connect(this.connectionString);
+      console.log('Connected to database')
       return;
     } catch (error) {
       console.error(`Error connecting to database: ${error}`);
@@ -46,13 +47,20 @@ class TSGooseHandler implements TSGooseHandlerProps {
    */
   createModel<T>({
     clazz,
-  }: CreateModelParams<T>): ReturnModelType<ClazzT<T>> | { error: string } {
+  }: CreateModelParams<T>): ReturnModelType<ClazzT<T>>  {
     try {
       const Model = getModelForClass(clazz);
+      Model.schema.set('toJSON', {
+        transform: (_document, returnedObject) => {
+          returnedObject.id = returnedObject._id.toString();
+          delete returnedObject._id;
+          delete returnedObject.__v;
+        }
+      });
       return Model;
     } catch (error) {
       console.error(error);
-      return { error: `Error creating model ${clazz.name}` };
+      throw new Error(`Error creating model for class ${clazz.name}`);
     }
   }
 
@@ -75,6 +83,13 @@ class TSGooseHandler implements TSGooseHandlerProps {
     }
     Object.defineProperty(DynamicClass, "name", { value: name });
     const Model = getModelForClass(DynamicClass as ClazzT<T>);
+    Model.schema.set('toJSON', {
+      transform: (_document, returnedObject) => {
+        returnedObject.id = returnedObject._id.toString();
+        delete returnedObject._id;
+        delete returnedObject.__v;
+      }
+    });
     return Model;
   }
 
@@ -88,7 +103,7 @@ class TSGooseHandler implements TSGooseHandlerProps {
       return document;
     } catch (error) {
       console.error(error);
-      return { error: `Error adding document to model ${Model.modelName}` };
+      return { error: `Error adding document to model ${Model.modelName}. Error: ${error}` };
     }
   }
 

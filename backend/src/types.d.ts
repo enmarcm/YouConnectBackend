@@ -69,3 +69,12 @@ export interface SearchRelationsParams<T>{
     id?: string ,
     relationField: string
 }
+
+export interface ContactInterface{
+  id: string,
+  name: string,
+  number: string,
+  photo: string
+}
+
+export type ContactsUsers = ContactInterface | undefined
