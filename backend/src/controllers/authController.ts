@@ -1,13 +1,11 @@
 import { Request, Response } from "express";
 import { RegisterUser, RegisteredUser } from "../types";
-import { ITSGooseHandler } from "../data/instances";
 import REGISTER_VALIDATORS from "../schemas/registerValidators";
 import { INodeMailer } from "../data/instances";
-import { ActivateCodeModel } from "../typegoose/models";
 import CryptManager from "../components/CryptManager";
 import { Constants, URLS } from "../enums";
 import UserModelClass from "../models/UserModelClass";
-import ActivateCodeClass from "../models/ActivateCodeCalass";
+import ActivateModelClass from "../models/ActivateModelClass";
 
 class AuthController {
   private static verifyData({
@@ -77,6 +75,7 @@ class AuthController {
     }
   }
 
+  //TODO
   //Esto hay que hacerlo mejor en el modelo
   private static async sendVerificationMail({
     userData,
@@ -88,7 +87,7 @@ class AuthController {
     try {
       const htmlContent = `
         <div style="text-align: center; font-family: Arial, sans-serif;">
-          <h1 style="color: #008080;">YourConnect</h1>
+          <h1 style="color: #008080;">YouConnect</h1>
           <p style="font-size: 1.2em;">Thank you for registering with us!</p>
           <p style="font-size: 1.2em;">Please click the button below to activate your account.</p>
           <a href="${URLS.ACTIVATE_USER}/${code}" style="display: inline-block; background-color: #008080; color: #ffffff; padding: 10px 20px; text-decoration: none; font-size: 1.5em; margin: 20px auto; border-radius: 5px;">Activate Account</a>
@@ -113,9 +112,8 @@ class AuthController {
       const { code } = req.params;
 
       // Buscar el activationRecord
-      const activationRecord = await ITSGooseHandler.searchOne({
-        Model: ActivateCodeModel,
-        condition: { code },
+      const activationRecord = await ActivateModelClass.searchOneActivation({
+        code,
       });
 
       if (!activationRecord)
@@ -135,7 +133,7 @@ class AuthController {
         return res.json({ error: "Error activating user" });
 
       // Eliminar el activationRecord
-      const deletedRecord = await ActivateCodeClass.removeActivateDocument({
+      const deletedRecord = await ActivateModelClass.removeActivateDocument({
         idActivation: activationRecord._id,
       });
 
@@ -163,7 +161,10 @@ class AuthController {
         },
       });
 
-    if (typeof verifyDataResponse === "object" && Constants.ERROR in verifyDataResponse)
+    if (
+      typeof verifyDataResponse === "object" &&
+      Constants.ERROR in verifyDataResponse
+    )
       return res.status(400).json({ error: verifyDataResponse.error });
 
     if (!(await AuthController.verifyUser({ req })))

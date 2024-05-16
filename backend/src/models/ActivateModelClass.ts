@@ -1,7 +1,7 @@
 import { ITSGooseHandler } from "../data/instances";
 import { ActivateCodeModel } from "../typegoose/models";
 
-class ActivateCodeClass {
+class ActivateModelClass {
   static async removeActivateDocument({
     idActivation,
   }: {
@@ -19,6 +19,20 @@ class ActivateCodeClass {
       return { error };
     }
   }
+
+  static async searchOneActivation({ code }: { code: string }) {
+    try {
+      const result = await ITSGooseHandler.searchOne({
+        Model: ActivateCodeModel,
+        condition: { code },
+      });
+
+      return result;
+    } catch (error) {
+      console.error(error);
+      return { error };
+    }
+  }
 }
 
-export default ActivateCodeClass;
+export default ActivateModelClass;
