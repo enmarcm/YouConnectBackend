@@ -78,3 +78,21 @@ export interface ContactInterface{
 }
 
 export type ContactsUsers = ContactInterface | undefined
+
+interface HostConfig {
+  host: string;
+  port: number;
+  secure: boolean;
+}
+
+interface MailerConfig {
+  host: string;
+  user: string;
+  password: string;
+}
+
+interface MailOptions {
+  to: string;
+  subject: string;
+  text: string;
+}

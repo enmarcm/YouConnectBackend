@@ -1,5 +1,9 @@
 import { prop, Ref } from "@typegoose/typegoose";
-import { UserValidations } from "./schemasValidations";
+import {
+  ContactValidations,
+  GroupValidation,
+  UserValidations,
+} from "./schemasValidations";
 
 export class User {
   @prop({
@@ -16,7 +20,11 @@ export class User {
   })
   public email!: string;
 
-  @prop({ required: true, type: String , validate: UserValidations.passwordValidate()})
+  @prop({
+    required: true,
+    type: String,
+    validate: UserValidations.passwordValidate(),
+  })
   public password!: string;
 
   @prop({
@@ -37,15 +45,33 @@ export class User {
     required: false,
     type: () => [String],
     validate: UserValidations.contactsValidate(),
+    default: [],
   })
   public contacts!: Ref<Contact>[];
+
+  @prop({ required: false, type: Number, default: 3 })
+  public attempts!: number;
+
+  @prop({ required: false, type: Boolean, default: false })
+  public blocked!: boolean;
+
+  @prop({ required: false, type: Boolean, default: false })
+  public active!: boolean;
 }
 
 export class Group {
-  @prop({ required: true, type: String })
+  @prop({
+    required: true,
+    type: String,
+    validate: GroupValidation.nameValidate(),
+  })
   public name!: string;
 
-  @prop({ required: true, type: String })
+  @prop({
+    required: true,
+    type: String,
+    validate: GroupValidation.descriptionValidate(),
+  })
   public description!: string;
 
   @prop({ required: false, type: Number })
@@ -56,19 +82,35 @@ export class Group {
 }
 
 export class Contact {
-  @prop({ required: true, type: String })
+  @prop({
+    required: true,
+    type: String,
+    validate: ContactValidations.nameValidate(),
+  })
   public name!: string;
 
-  @prop({ required: true, type: String })
+  @prop({
+    required: true,
+    type: String,
+    validate: ContactValidations.emailValidate(),
+  })
   public email!: string;
 
-  @prop({ required: true, type: String })
+  @prop({
+    required: true,
+    type: String,
+    validate: ContactValidations.numberValidate(),
+  })
   public number!: string;
 
   @prop({ ref: User, required: true, type: String })
   public idUser!: Ref<User>;
 
-  @prop({ required: false, type: String })
+  @prop({
+    required: false,
+    type: String,
+    validate: ContactValidations.imageValidate(),
+  })
   public image!: string;
 }
 

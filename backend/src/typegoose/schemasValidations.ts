@@ -15,7 +15,8 @@ export class UserValidations {
 
   static passwordValidate = () => ({
     validator: (v: string) => /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,12}$/.test(v),
-    message: "Password must be 8-12 characters long, contain at least one uppercase letter and one number.",
+    message:
+      "Password must be 8-12 characters long, contain at least one uppercase letter and one number.",
   });
 
   static imageValidate = () => ({
@@ -32,5 +33,42 @@ export class UserValidations {
   static contactsValidate = () => ({
     validator: (v: Ref<Contact>[]) => Array.isArray(v),
     message: "Contacts must be an array.",
+  });
+}
+
+export class GroupValidation {
+  static nameValidate = () => ({
+    validator: (v: string) => /^[a-zA-Z0-9]{1,20}$/.test(v),
+    message:
+      "Name must be 1-20 characters long and contain only letters and numbers.",
+  });
+
+  static descriptionValidate = () => ({
+    validator: (v: string) => /^.{1,200}$/.test(v),
+    message: "Description must be 1-200 characters long.",
+  });
+}
+
+export class ContactValidations {
+  static nameValidate = () => ({
+    validator: (v: string) => /^[a-zA-Z0-9\s]{1,30}$/.test(v),
+    message:
+      "Name must be 1-30 characters long and contain only letters, numbers, and spaces.",
+  });
+
+  static emailValidate = () => ({
+    validator: (v: string) => /\S+@\S+\.\S+/.test(v),
+    message: "Email is not valid!",
+  });
+
+  static numberValidate = () => ({
+    validator: (v: string) => /^\+?[1-9]\d{1,14}$/.test(v),
+    message: "Number must be a valid international phone number.",
+  });
+
+  static imageValidate = () => ({
+    validator: (v: string) =>
+      /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(v),
+    message: "Image must be a valid URL.",
   });
 }
