@@ -1,3 +1,6 @@
+import { Request, Response } from "express";
+import { User } from "./typegoose/schemasDefinitions";
+
 export interface StartServerProps {
   app: Express;
   PORT: number;
@@ -23,7 +26,7 @@ export interface SimetrycEncryptParams {
 }
 
 export interface TSGooseHandlerProps {
-  private connectionString: string;
+  connectionString: string;
 }
 
 export type ClazzT<T> = new () => T;
@@ -32,7 +35,13 @@ export interface CreateModelParams<T> {
   clazz: ClazzT<T>;
 }
 
-type DefineModelSchemasType = BasePropOptions | ArrayPropOptions | MapPropOptions | PropOoptionsForNumber | VirtualOptions | undefined
+type DefineModelSchemasType =
+  | BasePropOptions
+  | ArrayPropOptions
+  | MapPropOptions
+  | PropOoptionsForNumber
+  | VirtualOptions
+  | undefined;
 
 export interface DefineModelParams<T> {
   name: string;
@@ -58,41 +67,75 @@ export interface EditDocumentParams<T> {
 export interface SearchIdParams<T> {
   Model: ReturnModelType<ClazzT<T>>;
   id: string;
+  transform?: Record<string, number>;
 }
 
-export interface SearchAll<T>{
-  Model: ReturnModelType<ClazzT<T>>
+export interface SearchAll<T> {
+  Model: ReturnModelType<ClazzT<T>>;
+  transform?: Record<string, number>;
 }
 
-export interface SearchRelationsParams<T>{
-  Model: ReturnModelType<ClazzT<T>>,
-    id?: string ,
-    relationField: string
+export interface SearchRelationsParams<T> {
+  Model: ReturnModelType<ClazzT<T>>;
+  id?: string;
+  relationField: string;
 }
 
-export interface ContactInterface{
-  id: string,
-  name: string,
-  number: string,
-  photo: string
+export interface ContactInterface {
+  id: string;
+  name: string;
+  number: string;
+  photo: string;
 }
 
-export type ContactsUsers = ContactInterface | undefined
+export type ContactsUsers = ContactInterface | undefined;
 
-interface HostConfig {
+export interface HostConfig {
   host: string;
   port: number;
   secure: boolean;
 }
 
-interface MailerConfig {
+export interface MailerConfig {
   host: string;
   user: string;
   password: string;
 }
 
-interface MailOptions {
+export interface ReqRes {
+  req: Request;
+  res: Response;
+}
+
+export interface RegisterUser {
+  userName: string;
+  email: string;
+  password: string;
+  image?: string;
+  dateOfBirth: Date;
+}
+
+export interface RegisteredUser{
+  data: RegisterUser;
+  code: string
+}
+
+export interface SearchOneParams<T> {
+  Model: ReturnModelType<ClazzT<T>>;
+  condition: Partial<T>;
+  transform?: Record<string, number>;
+}
+
+export type ValidatorFunction = (v: string | Date) => boolean;
+
+export interface MailOptions {
   to: string;
   subject: string;
-  text: string;
+  text?: string;
+  html?: string;
+}
+
+export interface AddActivateCodeParams{
+  code: string,
+  idUser: string
 }

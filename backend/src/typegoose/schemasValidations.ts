@@ -26,7 +26,7 @@ export class UserValidations {
   });
 
   static dateOfBirtValidate = () => ({
-    validator: (v: Date) => !isNaN(v.getTime()),
+    validator: (v: any) => !isNaN(new Date(v).getTime()),
     message: "Date of birth must be a valid date.",
   });
 

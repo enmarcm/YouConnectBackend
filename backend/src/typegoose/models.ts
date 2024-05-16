@@ -4,6 +4,7 @@ import {
   Group,
   Contact,
   GroupContact,
+  ActivateCode,
 } from "../typegoose/schemasDefinitions";
 
 const UserModel = ITSGooseHandler.createModel<User>({ clazz: User });
@@ -16,5 +17,14 @@ const GroupContactModel = ITSGooseHandler.createModel<GroupContact>({
   clazz: GroupContact,
 });
 
+const ActivateCodeModel = ITSGooseHandler.createModel<ActivateCode>({
+  clazz: ActivateCode,
+});
 
-export { UserModel, GroupModel, ContactModel, GroupContactModel };
+export {
+  UserModel,
+  GroupModel,
+  ContactModel,
+  GroupContactModel,
+  ActivateCodeModel,
+};

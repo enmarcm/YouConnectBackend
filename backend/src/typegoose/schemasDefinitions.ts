@@ -41,13 +41,14 @@ export class User {
   })
   public dateOfBirth!: Date;
 
-  @prop({
-    required: false,
-    type: () => [String],
-    validate: UserValidations.contactsValidate(),
-    default: [],
-  })
-  public contacts!: Ref<Contact>[];
+  // @prop({
+  //   required: false,
+  //   ref: () => "Contact",
+  //   type: () => [Schema.Types.ObjectId],
+  //   validate: UserValidations.contactsValidate(),
+  //   default: () => [],
+  // })
+  // public contacts!: Ref<Contact>[];
 
   @prop({ required: false, type: Number, default: 3 })
   public attempts!: number;
@@ -120,4 +121,18 @@ export class GroupContact {
 
   @prop({ ref: Contact, required: true, type: String })
   public idContact!: Ref<Contact>;
+}
+
+export class ActivateCode {
+  @prop({ required: true, type: String })
+  public code!: string;
+
+  @prop({ required: true, type: String })
+  public idUser!: string;
+
+  @prop({ default: Date.now, type: Date })
+  public createdAt?: Date;
+
+  @prop({ expires: 7200, type: Date })
+  public expireAt?: Date;
 }

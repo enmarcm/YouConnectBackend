@@ -9,6 +9,7 @@ import {
   RemoveDocumentParams,
   SearchAll,
   SearchIdParams,
+  SearchOneParams,
   SearchRelationsParams,
   TSGooseHandlerProps,
 } from "../types";
@@ -21,10 +22,12 @@ class TSGooseHandler implements TSGooseHandlerProps {
     this.connectToDB();
   }
 
+  public isConnected = (): boolean => mongoose.connection.readyState === 1;
+
   private async connectToDB() {
     try {
       await mongoose.connect(this.connectionString);
-      console.log('Connected to database')
+      console.log("Connected to database");
       return;
     } catch (error) {
       console.error(`Error connecting to database: ${error}`);
@@ -45,17 +48,15 @@ class TSGooseHandler implements TSGooseHandlerProps {
   /**
    * Create a model using Typegoose
    */
-  createModel<T>({
-    clazz,
-  }: CreateModelParams<T>): ReturnModelType<ClazzT<T>>  {
+  createModel<T>({ clazz }: CreateModelParams<T>): ReturnModelType<ClazzT<T>> {
     try {
       const Model = getModelForClass(clazz);
-      Model.schema.set('toJSON', {
+      Model.schema.set("toJSON", {
         transform: (_document, returnedObject) => {
           returnedObject.id = returnedObject._id.toString();
           delete returnedObject._id;
           delete returnedObject.__v;
-        }
+        },
       });
       return Model;
     } catch (error) {
@@ -83,12 +84,12 @@ class TSGooseHandler implements TSGooseHandlerProps {
     }
     Object.defineProperty(DynamicClass, "name", { value: name });
     const Model = getModelForClass(DynamicClass as ClazzT<T>);
-    Model.schema.set('toJSON', {
+    Model.schema.set("toJSON", {
       transform: (_document, returnedObject) => {
         returnedObject.id = returnedObject._id.toString();
         delete returnedObject._id;
         delete returnedObject.__v;
-      }
+      },
     });
     return Model;
   }
@@ -103,7 +104,9 @@ class TSGooseHandler implements TSGooseHandlerProps {
       return document;
     } catch (error) {
       console.error(error);
-      return { error: `Error adding document to model ${Model.modelName}. Error: ${error}` };
+      return {
+        error: `Error adding document to model ${Model.modelName}. Error: ${error}`,
+      };
     }
   }
 
@@ -136,11 +139,26 @@ class TSGooseHandler implements TSGooseHandlerProps {
   }
 
   /**
+   * Search for one document in a model by a condition
+   */
+  async searchOne<T>({ Model, condition, transform }: SearchOneParams<T>) {
+    try {
+      const document = await Model.findOne(condition, transform);
+      return document;
+    } catch (error) {
+      console.error(error);
+      return {
+        error: `Error searching for one document in model ${Model.modelName}`,
+      };
+    }
+  }
+
+  /**
    * Search for a document in a model by its ID
    */
-  async searchId<T>({ Model, id }: SearchIdParams<T>) {
+  async searchId<T>({ Model, id, transform }: SearchIdParams<T>) {
     try {
-      const document = await Model.findById(id);
+      const document = await Model.findById(id, transform);
       return document;
     } catch (error) {
       console.error(error);
@@ -153,9 +171,9 @@ class TSGooseHandler implements TSGooseHandlerProps {
   /**
    * Search for all documents in a model
    */
-  async searchAll<T>({ Model }: SearchAll<T>) {
+  async searchAll<T>({ Model, transform }: SearchAll<T>) {
     try {
-      const documents = await Model.find();
+      const documents = await Model.find({}, transform);
       return documents;
     } catch (error) {
       console.error(error);

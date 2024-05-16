@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import CryptoJS from "crypto-js";
+import crypto from "node:crypto";
 
 import {
   CompareBcryptParams,
@@ -67,6 +68,13 @@ class CryptManager {
       return { error: `Error decrypting data. Error: ${error}` };
     }
   }
+
+  static generateRandom = ({ size = 8 } = {}) => {
+    const random = crypto.randomBytes(8).toString("hex");
+    const randomElement = random.slice(0, size);
+
+    return randomElement;
+  };
 }
 
 export default CryptManager;

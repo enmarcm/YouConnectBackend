@@ -58,7 +58,7 @@ class Mailer {
   }
 
   /**
-   * Envía un correo electrónico.
+   * Envía un correo electrónico de texto.
    * @async
    * @param {Object} options - El objeto de opciones.
    * @param {string} options.to - El destinatario del correo electrónico.
@@ -66,7 +66,7 @@ class Mailer {
    * @param {string} options.text - El cuerpo del correo electrónico.
    * @returns {Promise<Object>} El resultado del envío del correo electrónico.
    */
-  sendMail = async ({
+  sendMailText = async ({
     to,
     subject,
     text,
@@ -81,6 +81,35 @@ class Mailer {
 
       return result;
     } catch (error) {
+      return { error };
+    }
+  };
+
+  /**
+   * Envía un correo electrónico HTML.
+   * @async
+   * @param {Object} options - El objeto de opciones.
+   * @param {string} options.to - El destinatario del correo electrónico.
+   * @param {string} options.subject - El asunto del correo electrónico.
+   * @param {string} options.html - El cuerpo del correo electrónico en formato HTML.
+   * @returns {Promise<Object>} El resultado del envío del correo electrónico.
+   */
+  sendMailHtml = async ({
+    to,
+    subject,
+    html,
+  }: MailOptions & { html: string }): Promise<SentMessageInfo | { error: any }> => {
+    try {
+      const result = await this.transporter!.sendMail({
+        from: this.user,
+        to,
+        subject,
+        html,
+      });
+
+      return result;
+    } catch (error) {
+      console.log(error)
       return { error };
     }
   };
