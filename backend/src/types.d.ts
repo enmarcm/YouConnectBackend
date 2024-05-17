@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { User } from "./typegoose/schemasDefinitions";
+import { Types } from "mongoose";
 
 export interface StartServerProps {
   app: Express;
@@ -12,7 +13,7 @@ export interface ErrorResponse {
 
 export interface EncryptBcryptParams {
   data: string;
-  saltRounts: number;
+  saltRounts?: number;
 }
 
 export interface CompareBcryptParams {
@@ -115,9 +116,9 @@ export interface RegisterUser {
   dateOfBirth: Date;
 }
 
-export interface RegisteredUser{
+export interface RegisteredUser {
   data: RegisterUser;
-  code: string
+  code: string;
 }
 
 export interface SearchOneParams<T> {
@@ -135,7 +136,19 @@ export interface MailOptions {
   html?: string;
 }
 
-export interface AddActivateCodeParams{
-  code: string,
-  idUser: string
+export interface AddActivateCodeParams {
+  code: string;
+  idUser: string;
+}
+
+export interface UserInterface {
+  id?: string;
+  _id: string;
+  userName: string;
+  email: string;
+  password: string;
+  attempts: number;
+  blocked: boolean;
+  active: boolean;
+  dateOfBirth: Date;
 }

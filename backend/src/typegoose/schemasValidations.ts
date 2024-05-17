@@ -13,12 +13,6 @@ export class UserValidations {
     message: "Email is not valid!",
   });
 
-  static passwordValidate = () => ({
-    validator: (v: string) => /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,12}$/.test(v),
-    message:
-      "Password must be 8-12 characters long, contain at least one uppercase letter and one number.",
-  });
-
   static imageValidate = () => ({
     validator: (v: string) =>
       /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(v),

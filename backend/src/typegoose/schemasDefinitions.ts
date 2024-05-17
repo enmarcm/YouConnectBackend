@@ -23,7 +23,6 @@ export class User {
   @prop({
     required: true,
     type: String,
-    validate: UserValidations.passwordValidate(),
   })
   public password!: string;
 

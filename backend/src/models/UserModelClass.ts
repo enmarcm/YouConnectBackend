@@ -1,6 +1,7 @@
 import { ActivateCodeModel, UserModel } from "../typegoose/models";
 import { ITSGooseHandler } from "../data/instances";
-import { AddActivateCodeParams, RegisterUser } from "../types";
+import { AddActivateCodeParams, RegisterUser, UserInterface } from "../types";
+import CryptManager from "../components/CryptManager";
 
 class UserModelClass {
   static async obtainUsers() {
@@ -14,23 +15,27 @@ class UserModelClass {
     }
   }
 
-  static async registerUser({
-    userData,
-  }: {
-    // UserModel: ReturnModelType<ClazzT<User>>;
-    userData: RegisterUser;
-  }) {
+  static async registerUser({ userData }: { userData: RegisterUser }): Promise<UserInterface> {
     try {
+      const hashPassword = await CryptManager.encryptBcrypt({
+        data: userData.password,
+      });
+
+      const newUser = {
+        ...userData,
+        password: hashPassword,
+      };
+
       //TODO: Falta buscar el tipo del UserModel, que sea compatible con el _id sin modificar la clase
-      const result = await ITSGooseHandler.addDocument({
+      const result: UserInterface = await ITSGooseHandler.addDocument({
         Model: UserModel,
-        data: userData,
+        data: newUser,
       });
 
       return result;
     } catch (error) {
       console.error(error);
-      return { error };
+      throw new Error(`Error registering user. Error: ${error}`);
     }
   }
 
@@ -53,48 +58,76 @@ class UserModelClass {
     userName,
     email,
   }: {
-    userName: string;
-    email: string;
+    userName?: string;
+    email?: string;
   }) {
     try {
+      const condition = {
+        $or: [
+          ...(userName ? [{ userName }] : []),
+          ...(email ? [{ email }] : []),
+        ],
+      };
+
       const data = await ITSGooseHandler.searchOne({
         Model: UserModel,
-        condition: { $or: [{ userName }, { email }] },
+        condition,
       });
 
-      return data;
+      return data ? data : false;
     } catch (error) {
       console.error(error);
       return { error };
     }
   }
 
-  static async searchUserId({ id }: { id: string }) {
+  static async searchUserId({ id }: { id: string }): Promise<UserInterface> {
     try {
       const user = await ITSGooseHandler.searchOne({
         Model: UserModel,
         condition: { _id: id },
       });
 
-      return user;
+      return user as UserInterface;
+    } catch (error) {
+      console.error(error);
+      throw new Error(`Error searching user by id ${error}`);
+    }
+  }
+
+  static async activateUser({ id }: { id: string }) {
+    try {
+      const updatedUser = await ITSGooseHandler.editDocument({
+        Model: UserModel,
+        id,
+        newData: { active: true },
+      });
+
+      return updatedUser;
     } catch (error) {
       console.error(error);
       return { error };
     }
   }
 
-  static async activateUser({id}: {id: string}) {
+  static async decreaseAttempts({ id }: { id: string }) {
     try {
-      const updatedUser = await ITSGooseHandler.editDocument({
+      const { attempts } = await UserModelClass.searchUserId({ id });
+
+      if (Number(attempts) === 0) return;
+
+      const newAttempts = attempts - 1;
+
+      const result = await ITSGooseHandler.editDocument({
         Model: UserModel,
         id,
-        newData: {active: true}
-      })
+        newData: { attempts: newAttempts },
+      });
 
-      return updatedUser
+      return result;
     } catch (error) {
-      console.error(error)
-      return {error}
+      console.error(error);
+      throw new Error(`Error decreasing attempts. Error ${error}`);
     }
   }
 }

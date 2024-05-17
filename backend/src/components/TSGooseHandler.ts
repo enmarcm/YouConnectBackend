@@ -144,7 +144,8 @@ class TSGooseHandler implements TSGooseHandlerProps {
   async searchOne<T>({ Model, condition, transform }: SearchOneParams<T>) {
     try {
       const document = await Model.findOne(condition, transform);
-      return document;
+
+      return document ? document : false;
     } catch (error) {
       console.error(error);
       return {

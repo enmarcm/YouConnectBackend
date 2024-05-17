@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { RegisterUser, RegisteredUser } from "../types";
+import { RegisterUser, RegisteredUser, UserInterface } from "../types";
 import REGISTER_VALIDATORS from "../schemas/registerValidators";
 import { INodeMailer } from "../data/instances";
 import CryptManager from "../components/CryptManager";
@@ -60,7 +60,9 @@ class AuthController {
     try {
       const body = req.body as RegisterUser;
 
-      const userAdded = await UserModelClass.registerUser({ userData: body });
+      const userAdded = (await UserModelClass.registerUser({
+        userData: body,
+      })) as UserInterface;
 
       //Generate hash
       const code = CryptManager.generateRandom();
@@ -75,8 +77,7 @@ class AuthController {
     }
   }
 
-  //TODO
-  //Esto hay que hacerlo mejor en el modelo
+  //TODO: Esto hay que hacerlo mejor en el modelo
   private static async sendVerificationMail({
     userData,
     code,
@@ -107,7 +108,7 @@ class AuthController {
     }
   }
 
-  static async activateUser(req: Request, res: Response) {
+  public static async activateUser(req: Request, res: Response) {
     try {
       const { code } = req.params;
 
@@ -147,46 +148,116 @@ class AuthController {
     }
   }
 
-  static async register(req: Request, res: Response) {
-    const verifyDataResponse = AuthController.verifyData({ req });
+  public static async register(req: Request, res: Response) {
+    try {
+      const verifyDataResponse = AuthController.verifyData({ req });
 
-    if (!verifyDataResponse)
-      return res.status(400).json({
-        error: "Invalid data",
-        example: {
-          userName: "JohnDoe",
-          email: "JohnDoe123@gmail.com ",
-          password: "12345678A",
-          dateOfBirth: "1990-01-01",
-        },
-      });
+      if (
+        !verifyDataResponse ||
+        (typeof verifyDataResponse === "object" &&
+          "error" in verifyDataResponse)
+      ) {
+        throw new Error(
+          (verifyDataResponse as { error: string }).error || "Invalid data"
+        );
+      }
 
-    if (
-      typeof verifyDataResponse === "object" &&
-      Constants.ERROR in verifyDataResponse
-    )
-      return res.status(400).json({ error: verifyDataResponse.error });
+      const isUserExist = await AuthController.verifyUser({ req });
 
-    if (!(await AuthController.verifyUser({ req })))
-      return res.status(400).json({ error: "User or email already exist" });
+      if (!isUserExist) {
+        throw new Error("User or email already exist");
+      }
 
-    const data = (await AuthController.registerUser({ req })) as RegisteredUser;
+      const data = (await AuthController.registerUser({
+        req,
+      })) as RegisteredUser;
+      if (!data || typeof data === "boolean") {
+        throw new Error("Error registering user");
+      }
 
-    if (!data || typeof data === "boolean")
-      return res.status(500).json({ error: "Error registering user" });
-
-    if (
-      !(await AuthController.sendVerificationMail({
+      const isMailSent = await AuthController.sendVerificationMail({
         userData: data?.data,
         code: data?.code,
-      }))
-    )
-      return res.status(500).json({ error: "Error sending verification mail" });
+      });
+      if (!isMailSent) {
+        throw new Error("Error sending verification mail");
+      }
 
-    return res.status(201).json({
-      message: "User registered successfully, please activate your account",
-    });
+      return res.status(201).json({
+        message: "User registered successfully, please activate your account",
+      });
+    } catch (error) {
+      return res.status(500).json({ error: (error as Error).message });
+    }
   }
+
+  //! PRIVADA Verificar que el usuario existe y que cumpla con la REGEX
+  static async verifyLoginData({ userName }: { userName: string }) {
+    try {
+      const result = await UserModelClass.searchUserExist({ userName });
+
+      if (!result) return false;
+
+      return result._id;
+    } catch (error) {
+      return { error };
+    }
+  }
+
+  //! PRIVADA Este se encarga de verificar si el usuario esta bloqueado
+  static async verifyBlockUser({
+    userData,
+  }: {
+    userData: UserInterface;
+  }): Promise<Boolean> {
+    try {
+      return userData.blocked;
+    } catch (error) {
+      throw new Error(`New error: ${error}`);
+    }
+  }
+
+  //! PRIVADA Este verifica que la contraseña es correcta
+  static async verifyPassword({
+    userData,
+    passwordSend,
+  }: {
+    userData: UserInterface;
+    passwordSend: string;
+  }) {
+    try {
+      const { password } = userData;
+
+      const result = await CryptManager.compareBcrypt({
+        data: passwordSend,
+        hash: password,
+      });
+
+      return result;
+    } catch (error) {
+      throw new Error(`New error: ${error}`);
+    }
+  }
+
+  //! PRIVADA Este baja los intentos si se equivoca
+  static async decreaseAttempts({ id }: { id: string }) {
+    try {
+      const result = await UserModelClass.decreaseAttempts({ id });
+
+      return result;
+    } catch (error) {
+      throw new Error(`New error: ${error}`);
+    }
+  }
+
+  //Este se encarga de bloquear al usuario
+  // private static async blockUser({ req }: { Req: Request }) {}
+
+  //Este se encarga de desbloquear al usuario
+  // private static async unblockUser({ req }: { Req: Request }) {}
+
+  //Este se encarga de hacer el login
+  // public static async login({ req, res }: ReqRes) {}
 }
 
 export default AuthController;
