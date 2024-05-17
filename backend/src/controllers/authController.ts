@@ -8,47 +8,32 @@ import UserModelClass from "../models/UserModelClass";
 import ActivateModelClass from "../models/ActivateModelClass";
 
 class AuthController {
-  private static verifyData({
-    req,
-  }: {
-    req: Request;
-  }): boolean | { error: string } {
+  private static verifyData({ req }: { req: Request }): void {
     const body = req.body as RegisterUser;
-
     const { userName, email, password, dateOfBirth } = body;
 
-    if (!userName || !email || !password || !dateOfBirth) return false;
+    if (!userName || !email || !password || !dateOfBirth) {
+      throw new Error("Missing required fields");
+    }
 
     for (const field in body) {
       if (
         field in REGISTER_VALIDATORS &&
         !REGISTER_VALIDATORS[field]((body as any)[field])
       ) {
-        console.error(`${field} is not valid!`);
-        return { error: `${field} is not valid!` };
+        throw new Error(`${field} is not valid!`);
       }
     }
-
-    return true;
   }
 
-  private static async verifyUser({ req }: { req: Request }): Promise<Boolean> {
-    try {
-      const body = req.body as RegisterUser;
+  private static async verifyUser({ req }: { req: Request }): Promise<void> {
+    const body = req.body as RegisterUser;
+    const { email, userName } = body;
 
-      const { email, userName } = body;
+    const data = await UserModelClass.searchUserExist({ userName, email });
 
-      const data = await UserModelClass.searchUserExist({ userName, email });
-
-      if (data) {
-        console.warn("User or email already exist");
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.log(`Error in search user. Error: ${error}`);
-      return false;
+    if (data) {
+      throw new Error("User or email already exist");
     }
   }
 
@@ -150,30 +135,12 @@ class AuthController {
 
   public static async register(req: Request, res: Response) {
     try {
-      const verifyDataResponse = AuthController.verifyData({ req });
-
-      if (
-        !verifyDataResponse ||
-        (typeof verifyDataResponse === "object" &&
-          "error" in verifyDataResponse)
-      ) {
-        throw new Error(
-          (verifyDataResponse as { error: string }).error || "Invalid data"
-        );
-      }
-
-      const isUserExist = await AuthController.verifyUser({ req });
-
-      if (!isUserExist) {
-        throw new Error("User or email already exist");
-      }
+      AuthController.verifyData({ req });
+      await AuthController.verifyUser({ req });
 
       const data = (await AuthController.registerUser({
         req,
       })) as RegisteredUser;
-      if (!data || typeof data === "boolean") {
-        throw new Error("Error registering user");
-      }
 
       const isMailSent = await AuthController.sendVerificationMail({
         userData: data?.data,

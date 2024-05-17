@@ -152,3 +152,5 @@ export interface UserInterface {
   active: boolean;
   dateOfBirth: Date;
 }
+
+export type ErrorHandler = (res: Response, err?: Error) => Response;
