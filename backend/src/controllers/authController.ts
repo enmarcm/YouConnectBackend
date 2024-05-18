@@ -159,7 +159,7 @@ class AuthController {
   }
 
   //! PRIVADA Verificar que el usuario existe y que cumpla con la REGEX
-  static async verifyLoginData({ userName }: { userName: string }) {
+  private static async verifyLoginData({ userName }: { userName: string }) {
     try {
       const result = await UserModelClass.searchUserExist({ userName });
 
@@ -172,7 +172,7 @@ class AuthController {
   }
 
   //! PRIVADA Este se encarga de verificar si el usuario esta bloqueado
-  static async verifyBlockUser({
+  private static async verifyBlockUser({
     userData,
   }: {
     userData: UserInterface;
@@ -185,7 +185,7 @@ class AuthController {
   }
 
   //! PRIVADA Este verifica que la contraseña es correcta
-  static async verifyPassword({
+  private static async verifyPassword({
     userData,
     passwordSend,
   }: {
@@ -207,7 +207,7 @@ class AuthController {
   }
 
   //! PRIVADA Este baja los intentos si se equivoca
-  static async decreaseAttempts({ id }: { id: string }) {
+  private static async decreaseAttempts({ id }: { id: string }) {
     try {
       const result = await UserModelClass.decreaseAttempts({ id });
 
@@ -218,13 +218,105 @@ class AuthController {
   }
 
   //Este se encarga de bloquear al usuario
-  // private static async blockUser({ req }: { Req: Request }) {}
+  private static async blockUser({ id }: { id: string }) {
+    try {
+      const result = await UserModelClass.blockUser({ id });
+
+      return result;
+    } catch (error) {
+      throw new Error(`New error: ${error}`);
+    }
+  }
 
   //Este se encarga de desbloquear al usuario
-  // private static async unblockUser({ req }: { Req: Request }) {}
+  //TODO: ARREGLAR
+  //!WARNING
+  //@ts-ignore
+  private static async unblockUser({ id }: { id: string }) {
+    try {
+      const result = await UserModelClass.unblockUser({ id });
+
+      return result;
+    } catch (error) {
+      throw new Error(`New error: ${error}`);
+    }
+  }
+
+  private static async resetAttempts({ id }: { id: string }) {
+    try {
+      const result = await UserModelClass.resetAttempts({ id });
+
+      return result;
+    } catch (error) {
+      throw new Error(`New error: ${error}`);
+    }
+  }
+
+  //!IMPORTANTE
+  private static async verifyActiveUser({ id }: { id: string }) {
+    try {
+      const user = await UserModelClass.searchUserId({ id });
+
+      if (!user) return false;
+
+      return user.active;
+    } catch (error) {
+      throw new Error(`New error: ${error}`);
+    }
+  }
 
   //Este se encarga de hacer el login
-  // public static async login({ req, res }: ReqRes) {}
+  public static async login(req: Request, res: Response) {
+    try {
+      const { userName, password } = req.body;
+
+      const id = await AuthController.verifyLoginData({ userName });
+
+      if (!id) {
+        return res.status(401).json({ error: "User not found" });
+      }
+
+      const userData = await UserModelClass.searchUserId({ id });
+
+      if (!userData) {
+        return res.status(401).json({ error: "User not found" });
+      }
+
+      const isBlocked = await AuthController.verifyBlockUser({ userData });
+
+      if (isBlocked) {
+        return res.status(401).json({ error: "User is blocked" });
+      }
+
+      const isPasswordCorrect = await AuthController.verifyPassword({
+        userData,
+        passwordSend: password,
+      });
+
+      if (!isPasswordCorrect) {
+        await AuthController.decreaseAttempts({ id });
+
+        const user = await UserModelClass.searchUserId({ id });
+
+        if (user.attempts <= 0) {
+          await AuthController.blockUser({ id });
+          return res.status(401).json({ error: "User is blocked" });
+        }
+
+        return res.status(401).json({ error: "Password is incorrect" });
+      }
+
+      if (!(await AuthController.verifyActiveUser({ id }))) {
+        return res.status(401).json({ error: "User is not active" });
+      }
+
+      await AuthController.resetAttempts({ id });
+
+      return res.status(200).json({ message: "User logged in successfully" });
+    } catch (error) {
+      return res.status(500).json({ error: (error as Error).message });
+    }
+  }
 }
 
 export default AuthController;

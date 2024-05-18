@@ -15,7 +15,11 @@ class UserModelClass {
     }
   }
 
-  static async registerUser({ userData }: { userData: RegisterUser }): Promise<UserInterface> {
+  static async registerUser({
+    userData,
+  }: {
+    userData: RegisterUser;
+  }): Promise<UserInterface> {
     try {
       const hashPassword = await CryptManager.encryptBcrypt({
         data: userData.password,
@@ -128,6 +132,53 @@ class UserModelClass {
     } catch (error) {
       console.error(error);
       throw new Error(`Error decreasing attempts. Error ${error}`);
+    }
+  }
+
+  static async blockUser({ id }: { id: string }) {
+    try {
+      const result = await ITSGooseHandler.editDocument({
+        Model: UserModel,
+        id,
+        newData: { blocked: true },
+      });
+
+      return result;
+    } catch (error) {
+      console.error(error);
+      throw new Error(`Error blocking user. Error ${error}`);
+    }
+  }
+
+  // TODO: IMPLEMENTAR
+  //!WARNING AUN NO SE USA
+  static async unblockUser({ id }: { id: string }) {
+    try {
+      const result = await ITSGooseHandler.editDocument({
+        Model: UserModel,
+        id,
+        newData: { blocked: false },
+      });
+
+      return result;
+    } catch (error) {
+      console.error(error);
+      throw new Error(`Error unblocking user. Error ${error}`);
+    }
+  }
+
+  static async resetAttempts({ id }: { id: string }) {
+    try {
+      const result = await ITSGooseHandler.editDocument({
+        Model: UserModel,
+        id,
+        newData: { attempts: 3 },
+      });
+
+      return result;
+    } catch (error) {
+      console.error(error);
+      throw new Error(`Error resetting attempts. Error ${error}`);
     }
   }
 }
