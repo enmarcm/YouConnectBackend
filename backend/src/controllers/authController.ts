@@ -158,7 +158,6 @@ class AuthController {
     }
   }
 
-  //! PRIVADA Verificar que el usuario existe y que cumpla con la REGEX
   private static async verifyLoginData({ userName }: { userName: string }) {
     try {
       const result = await UserModelClass.searchUserExist({ userName });
@@ -171,7 +170,6 @@ class AuthController {
     }
   }
 
-  //! PRIVADA Este se encarga de verificar si el usuario esta bloqueado
   private static async verifyBlockUser({
     userData,
   }: {
@@ -184,7 +182,6 @@ class AuthController {
     }
   }
 
-  //! PRIVADA Este verifica que la contraseña es correcta
   private static async verifyPassword({
     userData,
     passwordSend,
@@ -206,7 +203,6 @@ class AuthController {
     }
   }
 
-  //! PRIVADA Este baja los intentos si se equivoca
   private static async decreaseAttempts({ id }: { id: string }) {
     try {
       const result = await UserModelClass.decreaseAttempts({ id });
