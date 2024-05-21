@@ -193,13 +193,34 @@ class TSGooseHandler implements TSGooseHandlerProps {
     relationField,
   }: SearchRelationsParams<T>) {
     try {
-      const query = id ? { _id: id } : {};
+      const query = id ? { [relationField]: id } : {}; // Cambia _id por relationField
       const documents = await Model.find(query).populate(relationField);
       return documents;
     } catch (error) {
       console.error(error);
       return {
         error: `Error searching for all documents in model ${Model.modelName} and their relations`,
+      };
+    }
+  }
+
+  /**
+   * Remove all documents from a model that match a specific condition
+   */
+  async removeAllDocumentsByCondition<T>({
+    Model,
+    condition,
+  }: {
+    Model: ReturnModelType<ClazzT<T>>;
+    condition: Object;
+  }) {
+    try {
+      const result = await Model.deleteMany(condition);
+      return result;
+    } catch (error) {
+      console.error(error);
+      return {
+        error: `Error removing documents from model ${Model.modelName}`,
       };
     }
   }

@@ -83,10 +83,17 @@ export interface SearchRelationsParams<T> {
 }
 
 export interface ContactInterface {
-  id: string;
+  id?: string;
   name: string;
-  number: string;
-  photo: string;
+  number: string | Array<string>;
+  image?: string;
+  idUser: string;
+  email: string;
+}
+
+export interface UpdateContactModelInterface {
+  id: string;
+  contact: ContactInterface;
 }
 
 export type ContactsUsers = ContactInterface | undefined;
@@ -153,14 +160,15 @@ export interface UserInterface {
   dateOfBirth: Date;
 }
 
-export type ErrorHandler = (res: Response, err?: Error) => Response;
+type ErrorHandler = (res: Response, message?: string) => void;
+
 
 export type JWTManagerProps = {
   SECRET_WORD: string;
   expiresIn?: string;
 };
 
-export interface GenerateTokenData{
+export interface GenerateTokenData {
   id: string;
   userName: string;
   email: string;

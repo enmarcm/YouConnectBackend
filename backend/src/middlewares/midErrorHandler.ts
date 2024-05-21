@@ -7,9 +7,18 @@ export default function midErrorHandler(
   res: Response,
   _next: NextFunction
 ) {
-  console.error(err.name);
+  const isTokenError =
+    err.message.includes("TokenExpiredError") ||
+    err.message.includes("JsonWebTokenError");
 
-  const handler = ERROR_HANDLERS[err.name] || ERROR_HANDLERS.defaultError;
+  const errorHandlerKey = isTokenError
+    ? err.message.includes("TokenExpiredError")
+      ? "TokenExpiredError"
+      : "JsonWebTokenError"
+    : err.name;
 
-  handler(res, err);
+  const handler =
+    ERROR_HANDLERS[errorHandlerKey] || ERROR_HANDLERS.defaultError;
+
+  handler(res, isTokenError ? err.message : undefined);
 }

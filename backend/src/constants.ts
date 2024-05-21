@@ -17,10 +17,11 @@ export const Hosts: Record<string, HostConfig> = {
   },
 };
 
+
 export const ERROR_HANDLERS: Record<string, ErrorHandler> = {
   CastError: (res: Response) => res.status(400).json({ error: "Malformatted ID" }),
   ValidationError: (res: Response) => res.status(409).json({ error: "Validation error" }),
-  JsonWebTokenError: (res: Response) => res.status(401).json({ error: "Invalid token" }),
-  TokenExpiredError: (res: Response) => res.status(401).json({ error: "Expired token" }),
+  JsonWebTokenError: (res: Response, message?: string) => res.status(401).json({ error: "Invalid token", message }),
+  TokenExpiredError: (res: Response, message?: string) => res.status(401).json({ error: "Expired token", message }),
   defaultError: (res: Response) => res.status(500).json({ error: "Something went wrong" }),
 };

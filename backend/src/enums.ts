@@ -12,5 +12,6 @@ export enum URLS{
 }
 
 export enum Constants{
-    ERROR = "error"
+    ERROR = "error",
+    IMAGE_DEFAULT = 'https://e7.pngegg.com/pngimages/889/832/png-clipart-google-contacts-mobile-app-contact-manager-app-store-android-application-package-email-miscellaneous-blue.png'
 }

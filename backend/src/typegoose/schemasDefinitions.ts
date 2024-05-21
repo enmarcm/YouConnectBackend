@@ -4,6 +4,7 @@ import {
   GroupValidation,
   UserValidations,
 } from "./schemasValidations";
+import { Constants } from "../enums";
 
 export class User {
   @prop({
@@ -101,7 +102,7 @@ export class Contact {
     type: String,
     validate: ContactValidations.numberValidate(),
   })
-  public number!: string;
+  public number!: string | Array<string>;
 
   @prop({ ref: User, required: true, type: String })
   public idUser!: Ref<User>;
@@ -110,8 +111,9 @@ export class Contact {
     required: false,
     type: String,
     validate: ContactValidations.imageValidate(),
+    default: Constants.IMAGE_DEFAULT,
   })
-  public image!: string;
+  public image?: string;
 }
 
 export class GroupContact {

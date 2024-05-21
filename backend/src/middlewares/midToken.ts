@@ -1,7 +1,14 @@
-import { Request, Response, NextFunction } from "express";
+import { Request as ExpressRequest, Response, NextFunction } from "express";
 import { IJWTManager } from "../data/instances";
 import UserModelClass from "../models/UserModelClass";
 import { GenerateTokenData } from "../types";
+
+// Extiende la interfaz Request para incluir las nuevas propiedades
+interface Request extends ExpressRequest {
+  idUser?: string;
+  username?: string;
+  email?: string;
+}
 
 export default async function midToken(
   req: Request,
@@ -30,6 +37,11 @@ export default async function midToken(
     if (!token) {
       return res.status(401).json({ message: "Token not found" });
     }
+
+    // Agregar información del usuario al objeto req
+    req.idUser = user.id;
+    req.username = user.userName;
+    req.email = user.email;
 
     return next();
   } catch (error) {
