@@ -1,5 +1,5 @@
 import { ActivateCodeModel, UserModel } from "../typegoose/models";
-import { ITSGooseHandler } from "../data/instances";
+import { IJWTManager, ITSGooseHandler } from "../data/instances";
 import { AddActivateCodeParams, RegisterUser, UserInterface } from "../types";
 import CryptManager from "../components/CryptManager";
 
@@ -179,6 +179,25 @@ class UserModelClass {
     } catch (error) {
       console.error(error);
       throw new Error(`Error resetting attempts. Error ${error}`);
+    }
+  }
+
+  static async generateToken({
+    id,
+    userName,
+    email,
+  }: {
+    id: string;
+    userName: string;
+    email: string;
+  }) {
+    try {
+      const dataToken = IJWTManager.generateToken({ id, email, userName });
+
+      return dataToken;
+    } catch (error) {
+      console.log("Error in generateToken() in UserModelClass.ts: ", error);
+      throw new Error(`Error generating token. Error ${error}`);
     }
   }
 }

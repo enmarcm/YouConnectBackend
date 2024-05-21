@@ -154,3 +154,14 @@ export interface UserInterface {
 }
 
 export type ErrorHandler = (res: Response, err?: Error) => Response;
+
+export type JWTManagerProps = {
+  SECRET_WORD: string;
+  expiresIn?: string;
+};
+
+export interface GenerateTokenData{
+  id: string;
+  userName: string;
+  email: string;
+}

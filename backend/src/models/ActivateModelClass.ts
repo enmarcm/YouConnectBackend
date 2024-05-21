@@ -20,11 +20,22 @@ class ActivateModelClass {
     }
   }
 
-  static async searchOneActivation({ code }: { code: string }) {
+  static async searchOneActivation({
+    code,
+    idUser,
+  }: {
+    code?: string;
+    idUser?: string;
+  }) {
     try {
+      const condition = {
+        ...(code ? { code } : {}),
+        ...(idUser ? { idUser } : {}),
+      };
+
       const result = await ITSGooseHandler.searchOne({
         Model: ActivateCodeModel,
-        condition: { code },
+        condition,
       });
 
       return result;

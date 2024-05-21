@@ -254,8 +254,20 @@ class AuthController {
       const user = await UserModelClass.searchUserId({ id });
 
       if (!user) return false;
+      const { active } = user;
 
-      return user.active;
+      if (active) return active;
+
+      const isCodeActive = await ActivateModelClass.searchOneActivation({
+        idUser: id,
+      });
+
+      if (isCodeActive) return false
+
+      const code = CryptManager.generateRandom();
+      await AuthController.sendVerificationMail({ userData: user, code });
+
+      return;
     } catch (error) {
       throw new Error(`New error: ${error}`);
     }
@@ -268,21 +280,15 @@ class AuthController {
 
       const id = await AuthController.verifyLoginData({ userName });
 
-      if (!id) {
-        return res.status(401).json({ error: "User not found" });
-      }
+      if (!id) return res.status(401).json({ error: "User not found" });
 
       const userData = await UserModelClass.searchUserId({ id });
 
-      if (!userData) {
-        return res.status(401).json({ error: "User not found" });
-      }
+      if (!userData) return res.status(401).json({ error: "User not found" });
 
       const isBlocked = await AuthController.verifyBlockUser({ userData });
 
-      if (isBlocked) {
-        return res.status(401).json({ error: "User is blocked" });
-      }
+      if (isBlocked) return res.status(401).json({ error: "User is blocked" });
 
       const isPasswordCorrect = await AuthController.verifyPassword({
         userData,
@@ -302,15 +308,27 @@ class AuthController {
         return res.status(401).json({ error: "Password is incorrect" });
       }
 
-      if (!(await AuthController.verifyActiveUser({ id }))) {
-        return res.status(401).json({ error: "User is not active" });
-      }
+      if (!(await AuthController.verifyActiveUser({ id })))
+        return res.status(401).json({ error: `User is not active. Verify mail ${userData.email}` });
 
       await AuthController.resetAttempts({ id });
 
-      return res.status(200).json({ message: "User logged in successfully" });
+      const token = await UserModelClass.generateToken({
+        id,
+        userName,
+        email: userData.email,
+      });
+
+      const response = {
+        message: "User logged in successfully",
+        token,
+        userName,
+        email: userData.email,
+      };
+
+      return res.json(response);
     } catch (error) {
-      return res.status(500).json({ error: (error as Error).message });
+      throw new Error(`Error in login. New error: ${error}`);
     }
   }
 }
