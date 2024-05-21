@@ -12,5 +12,4 @@ export default function midErrorHandler(
   const handler = ERROR_HANDLERS[err.name] || ERROR_HANDLERS.defaultError;
 
   handler(res, err);
-  return res.status(500).send("Something broke!");
 }

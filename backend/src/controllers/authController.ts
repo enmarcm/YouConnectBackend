@@ -262,7 +262,7 @@ class AuthController {
         idUser: id,
       });
 
-      if (isCodeActive) return false
+      if (isCodeActive) return false;
 
       const code = CryptManager.generateRandom();
       await AuthController.sendVerificationMail({ userData: user, code });
@@ -309,7 +309,9 @@ class AuthController {
       }
 
       if (!(await AuthController.verifyActiveUser({ id })))
-        return res.status(401).json({ error: `User is not active. Verify mail ${userData.email}` });
+        return res
+          .status(401)
+          .json({ error: `User is not active. Verify mail ${userData.email}` });
 
       await AuthController.resetAttempts({ id });
 

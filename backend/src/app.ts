@@ -9,6 +9,7 @@ import {
   midNotJson,
   midValidJson,
   midErrorHandler,
+  midToken,
 } from "./middlewares/middlewares";
 import R from "./routers/allRouters";
 import { Routes } from "./enums";
@@ -25,11 +26,13 @@ app.use(midConnectDB);
 //{ Routes
 app.use(Routes.MAIN, R.mainRouter);
 app.use(Routes.AUTH, R.authRouter);
+
+app.use(midToken);
 app.use(Routes.CONTACT, R.contactRouter);
 app.use(Routes.GROUP, R.groupRouter);
 app.use(Routes.PROFILE, R.profileRouter);
 
-app.use(midErrorHandler);
 app.use(midNotFound);
+app.use(midErrorHandler);
 
 startServer({ app, PORT });

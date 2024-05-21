@@ -11,10 +11,26 @@ class JWTManager {
   }
 
   generateToken(props: GenerateTokenData) {
-    const { id, userName, email } = props;
-    return jwt.sign({ id, userName, email }, this.SECRET_WORD, {
-      expiresIn: this.expiresIn,
-    });
+    try {
+      const { id, userName, email } = props;
+      const token = jwt.sign({ id, userName, email }, this.SECRET_WORD, {
+        expiresIn: this.expiresIn,
+      });
+
+      const tokenFormated = `Bearer ${token}`;
+      return tokenFormated;
+    } catch (error) {
+      throw new Error(`Error generating token: ${error}`);
+    }
+  }
+
+  verifyToken(token: string) {
+    try {
+      const decoded = jwt.verify(token, this.SECRET_WORD);
+      return decoded;
+    } catch (error) {
+      throw new Error(`Error verifying token: ${error}`);
+    }
   }
 }
 

@@ -5,6 +5,7 @@ import midNotFound from "./midNotFound";
 import midConnectDB from "./midConnectDB";
 import midValidJson from "./midValidJson";
 import midErrorHandler from "./midErrorHandler";
+import midToken from "./midToken";
 
 export const midJson = () => express.json();
 
@@ -18,4 +19,6 @@ export { midConnectDB };
 
 export { midValidJson };
 
-export {midErrorHandler}
+export { midErrorHandler };
+
+export { midToken };

@@ -17,5 +17,3 @@ export const IJWTManager = new JWTManager({
   SECRET_WORD: process.env.SECRET_WORD as string,
   expiresIn: process.env.JWT_EXPIRES_IN as string,
 });
-
-console.log(IJWTManager)
