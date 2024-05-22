@@ -24,12 +24,17 @@ class ContactModelClass {
     }
   }
 
-  static async getAllContactsByUserId({idUser} : {idUser: string}) {
+  static async getAllContactsByUserId({ idUser }: { idUser: string }) {
     try {
       const contactsUser = await ITSGooseHandler.searchRelations({
         Model: ContactModel,
         id: idUser,
         relationField: "idUser",
+        onlyId: true,
+        transform: (doc: any) => {
+          const { idUser, ...rest } = doc;
+          return rest;
+        },
       });
 
       if (contactsUser.length === 0 || "error" in contactsUser) return [];
@@ -45,7 +50,6 @@ class ContactModelClass {
 
   static async createContact(contact: ContactInterface) {
     try {
-      console.log(contact)
       const newContact = await ITSGooseHandler.addDocument({
         Model: ContactModel,
         data: contact,
@@ -113,6 +117,32 @@ class ContactModelClass {
       console.error(error);
       throw new Error(
         `Error deleting all contacts by user id: ${error} in deleteAllContactsByUserId method in ContactModelClass.ts`
+      );
+    }
+  }
+
+  static async getContactByUserAndNameOrNumber({
+    idUser,
+    name,
+    number,
+  }: {
+    idUser: string;
+    name: string;
+    number: string;
+  }) {
+    try {
+      const contact = await ITSGooseHandler.searchOne({
+        Model: ContactModel,
+        condition: { idUser, $or: [{ name }, { number }] },
+      });
+
+      return contact;
+    } catch (error) {
+      console.error(
+        `Error getting contact by user and name or number: ${error}. in getContactByUserAndNameOrNumber method in ContactModelClass.ts`
+      );
+      throw new Error(
+        `Error getting contact by user and name or number: ${error}`
       );
     }
   }

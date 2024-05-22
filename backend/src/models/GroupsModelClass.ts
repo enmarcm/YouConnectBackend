@@ -32,7 +32,7 @@ export default class GroupsModelClass {
     try {
       const groupsContact: GroupInterfaceData[] =
         await ITSGooseHandler.searchRelations({
-          Model: GroupContactModel,
+          Model: GroupModel,
           id: idUser,
           relationField: "idUser",
         });
@@ -110,6 +110,9 @@ export default class GroupsModelClass {
   static async getInfoGroup({ id }: { id: string }) {
     try {
       const group = await ITSGooseHandler.searchId({ Model: GroupModel, id });
+
+      if (!group) return { error: "Group not found" };
+
       return group;
     } catch (error) {
       console.error(

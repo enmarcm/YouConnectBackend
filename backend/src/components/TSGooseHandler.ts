@@ -191,16 +191,42 @@ class TSGooseHandler implements TSGooseHandlerProps {
     Model,
     id,
     relationField,
+    onlyId = false,
+    idField = "id",
+    transform,
   }: SearchRelationsParams<T>) {
     try {
-      const query = id ? { [relationField]: id } : {}; // Cambia _id por relationField
-      const documents = await Model.find(query).populate(relationField);
+      const query = id ? { [relationField]: id } : {};
+
+      let documents = onlyId
+        ? await Model.find(query).populate(relationField, idField)
+        : await Model.find(query).populate(relationField);
+
+      if (onlyId) {
+        documents = documents.map((doc: any) => ({
+          ...doc.toObject(),
+          [relationField]: doc[relationField][idField],
+        }));
+      }
+
+      // Default transformation
+      const defaultTransform = (doc: any) => {
+        const { _id, __v, ...rest } = doc;
+        return { id: _id, ...rest };
+      };
+
+      // Apply default transformation
+      documents = documents.map(defaultTransform);
+
+      // Apply custom transformation if provided
+      if (transform) documents = documents.map(transform);
+
       return documents;
     } catch (error) {
       console.error(error);
-      return {
-        error: `Error searching for all documents in model ${Model.modelName} and their relations`,
-      };
+      throw new Error(
+        `Error searching for all documents in model ${Model.modelName}. Error: ${error}. In searchRelations method in TSGooseHandler.ts`
+      );
     }
   }
 

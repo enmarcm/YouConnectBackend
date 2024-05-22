@@ -20,6 +20,9 @@ class ContactController {
         image = Constants.IMAGE_DEFAULT,
       } = body as ContactInterface;
 
+      //Verify if contact name or number already exists in the same user
+      await ContactController.verifyContactUniqueness({ idUser, name, number });
+
       const newContact = await ContactModelClass.createContact({
         idUser,
         name,
@@ -134,6 +137,58 @@ class ContactController {
       return res
         .status(500)
         .json({ error: `Error getting contacts by user id: ${error}` });
+    }
+  }
+
+  static async verifyUserOwnership({
+    idUser,
+    idContact,
+  }: {
+    idUser: string;
+    idContact: string;
+  }) {
+    try {
+      const contact = await ContactModelClass.getContactById({ id: idContact });
+
+      if (!contact || contact?.idUser !== idUser || "error" in contact)
+        throw new Error("Contact not found or not yours");
+
+      return true;
+    } catch (error) {
+      console.error(
+        `Error verifying user ownership: ${error}. In verifyUserOwnership method in ContactController.ts`
+      );
+      throw new Error(`Error verifying user ownership: ${error}`);
+    }
+  }
+
+  private static async verifyContactUniqueness({
+    idUser,
+    name,
+    number,
+  }: {
+    idUser: string;
+    name: string;
+    number: string;
+  }) {
+    try {
+      const existingContact =
+        await ContactModelClass.getContactByUserAndNameOrNumber({
+          idUser,
+          name,
+          number,
+        });
+
+      if (existingContact)
+        throw new Error("Contact already exists with the same name or number");
+
+      return true;
+    } catch (error) {
+      console.error(
+        `Error verifying contact uniqueness: ${error}. In verifyContactUniqueness method in ContactController.ts`
+      );
+
+      throw new Error(`Error verifying contact uniqueness: ${error}`);
     }
   }
 }

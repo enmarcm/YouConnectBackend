@@ -69,7 +69,7 @@ export class Group {
   public name!: string;
 
   @prop({
-    required: true,
+    required: false,
     type: String,
     validate: GroupValidation.descriptionValidate(),
   })
@@ -91,11 +91,11 @@ export class Contact {
   public name!: string;
 
   @prop({
-    required: true,
+    required: false,
     type: String,
     validate: ContactValidations.emailValidate(),
   })
-  public email!: string;
+  public email?: string;
 
   @prop({
     required: true,

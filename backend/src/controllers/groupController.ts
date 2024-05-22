@@ -1,8 +1,33 @@
 import ContactModelClass from "../models/ContactModelClass";
 import GroupsModelClass from "../models/GroupsModelClass";
 import { Request, Response } from "express";
+import ContactController from "./contactController";
 
 export default class GroupController {
+  private static async verifyUserOwnership({
+    idUser,
+    idGroup,
+  }: {
+    idUser: string;
+    idGroup: string;
+  }) {
+    try {
+      const group = await GroupsModelClass.getInfoGroup({ id: idGroup });
+
+      if ("error" in group)
+        throw new Error("Group not found. Error verifying user ownership");
+
+      if (!group || group.idUser !== idUser)
+        throw new Error(
+          "User is not the owner of the group. Error verifying user ownership"
+        );
+
+      return true;
+    } catch (error) {
+      throw new Error(`Error verifying user ownership: ${error}`);
+    }
+  }
+
   static async createGroup(req: Request, res: Response) {
     try {
       const { idUser } = req as any;
@@ -22,7 +47,7 @@ export default class GroupController {
     }
   }
 
-  static async getGroupsByUserId(req: Request, res: Response) {
+  static async getGroupsByUser(req: Request, res: Response) {
     try {
       const { idUser } = req as any;
 
@@ -35,20 +60,46 @@ export default class GroupController {
     }
   }
 
+  static async getGroupsByUserId(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+
+      const groups = await GroupsModelClass.getGroupsByUserId({ idUser: id });
+
+      return res.status(200).json(groups);
+    } catch (error) {
+      console.error(`Error getting groups by user id: ${error}`);
+      return res.status(500).json({ error: "Error getting groups by user id" });
+    }
+  }
+
   static async deleteGroup(req: Request, res: Response) {
     try {
       const { id } = req.params as any;
+      const { idUser } = req as any;
+
+      //Verify group exists
+      const group = await GroupsModelClass.getInfoGroup({ id });
+      if ("error" in group || !group)
+        return res.status(404).json({ error: "Group not found" });
+
+      //Veify ownership of the group by the user
+      await GroupController.verifyUserOwnership({
+        idUser: idUser,
+        idGroup: id,
+      });
+
       const deleteGroup = await GroupsModelClass.deleteGroup({ id });
 
       //Aqui hay que borrar tambien de la otra collecion, la de contactos y grupos
-      const deleteGrouptContact = await GroupsModelClass.removeGroupContacts({
+      const deleteGroupContact = await GroupsModelClass.removeGroupContacts({
         idGroup: id,
       });
 
       const message = {
         message: `Group ${id} deleted successfully`,
         ...deleteGroup,
-        ...deleteGrouptContact,
+        ...deleteGroupContact,
       };
       return res.status(204).json(message);
     } catch (error) {
@@ -72,6 +123,14 @@ export default class GroupController {
       const { id } = req.params as any;
       const { name, description, maxContacts } = req.body as any;
       const { idUser } = req as any;
+
+      //Verify group exists
+      const groupExist = await GroupsModelClass.getInfoGroup({ id });
+      if ("error" in groupExist || !groupExist)
+        return res.status(404).json({ error: "Group not found" });
+
+      //Verify user ownership
+      await GroupController.verifyUserOwnership({ idUser, idGroup: id });
 
       const group = await GroupsModelClass.updateGroup({
         id,
@@ -123,6 +182,7 @@ export default class GroupController {
   static async addContactToGroup(req: Request, res: Response) {
     try {
       const { idGroup, idContact } = req.body as any;
+      const { idUser } = req as any;
 
       //Hay que verificar que exista el grupo y el contacto
       const group = await GroupsModelClass.getInfoGroup({ id: idGroup });
@@ -133,11 +193,17 @@ export default class GroupController {
       if ("error" in contact)
         return res.status(404).json({ error: "Contact not found" });
 
-      console.log(group, contact);
+      await GroupController.verifyUserOwnership({ idUser: idUser, idGroup });
+      await ContactController.verifyUserOwnership({
+        idUser: idUser,
+        idContact,
+      });
+
       const groupContact = await GroupsModelClass.addContactToGroup({
         idGroup,
         idContact,
       });
+
       return res.status(201).json(groupContact);
     } catch (error) {
       console.error(`Error adding contact to group: ${error}`);
@@ -148,17 +214,24 @@ export default class GroupController {
   static async removeContactFromGroup(req: Request, res: Response) {
     try {
       const { idGroup, idContact } = req.body as any;
+      const { idUser } = req as any;
 
       //Verificar que exista el grupo y el contacto
       const group = await GroupsModelClass.getInfoGroup({ id: idGroup });
-      if ("error" in group)
+      if ("error" in group || !group)
         return res.status(404).json({ error: "Group not found" });
 
       const contact = await ContactModelClass.getContactById({ id: idContact });
-      if ("error" in contact)
+      if ("error" in contact || !contact)
         return res.status(404).json({ error: "Contact not found" });
 
-      
+      //Verify owenership of the group
+      await GroupController.verifyUserOwnership({ idUser: idUser, idGroup });
+      await ContactController.verifyUserOwnership({
+        idUser: idUser,
+        idContact,
+      });
+
       const groupContact = await GroupsModelClass.removeContactFromGroup({
         idGroup,
         idContact,

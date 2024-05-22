@@ -77,18 +77,22 @@ export interface SearchAll<T> {
 }
 
 export interface SearchRelationsParams<T> {
-  Model: ReturnModelType<ClazzT<T>>;
+  Model: ReturnModelType<any>;
   id?: string;
   relationField: string;
+  onlyId?: boolean;
+  idField?: string;
+  transform?: (doc: any) => any;
 }
 
 export interface ContactInterface {
+  _id?: string;
   id?: string;
   name: string;
-  number: string | Array<string>;
+  number: string; //TODO: FALTA QUE AGARRE VARIOS NUMEROS
   image?: string;
   idUser: string;
-  email: string;
+  email?: string;
 }
 
 export interface UpdateContactModelInterface {
@@ -181,7 +185,7 @@ export interface GroupInterfaceData {
   id?: string;
 }
 
-export interface GroupContactData{
+export interface GroupContactData {
   idGroup: string;
   idContact: string;
 }
