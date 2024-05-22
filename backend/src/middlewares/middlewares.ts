@@ -6,19 +6,18 @@ import midConnectDB from "./midConnectDB";
 import midValidJson from "./midValidJson";
 import midErrorHandler from "./midErrorHandler";
 import midToken from "./midToken";
+import midValidateId from "./midValidateId";
 
 export const midJson = () => express.json();
 
 export const midCors = () => cors({ credentials: true, origin: true });
 
-export { midNotJson };
-
-export { midNotFound };
-
-export { midConnectDB };
-
-export { midValidJson };
-
-export { midErrorHandler };
-
-export { midToken };
+export {
+  midNotJson,
+  midNotFound,
+  midConnectDB,
+  midValidJson,
+  midErrorHandler,
+  midToken,
+  midValidateId,
+};

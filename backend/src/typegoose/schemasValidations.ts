@@ -32,9 +32,9 @@ export class UserValidations {
 
 export class GroupValidation {
   static nameValidate = () => ({
-    validator: (v: string) => /^[a-zA-Z0-9]{1,20}$/.test(v),
+    validator: (v: string) => /^[a-zA-Z0-9\s]{1,20}$/.test(v),
     message:
-      "Name must be 1-20 characters long and contain only letters and numbers.",
+      "Name must be 1-20 characters long and contain only letters, numbers, and spaces.",
   });
 
   static descriptionValidate = () => ({

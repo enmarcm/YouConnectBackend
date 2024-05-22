@@ -162,7 +162,6 @@ export interface UserInterface {
 
 type ErrorHandler = (res: Response, message?: string) => void;
 
-
 export type JWTManagerProps = {
   SECRET_WORD: string;
   expiresIn?: string;
@@ -172,4 +171,17 @@ export interface GenerateTokenData {
   id: string;
   userName: string;
   email: string;
+}
+
+export interface GroupInterfaceData {
+  name: string;
+  description: string;
+  idUser: string;
+  maxContacts: number;
+  id?: string;
+}
+
+export interface GroupContactData{
+  idGroup: string;
+  idContact: string;
 }
