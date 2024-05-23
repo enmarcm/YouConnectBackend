@@ -2,8 +2,49 @@ import { ActivateCodeModel, UserModel } from "../typegoose/models";
 import { IJWTManager, ITSGooseHandler } from "../data/instances";
 import { AddActivateCodeParams, RegisterUser, UserInterface } from "../types";
 import CryptManager from "../components/CryptManager";
+import GroupsModelClass from "./GroupsModelClass";
 
 class UserModelClass {
+  static async deleteAccount({ idUser }: { idUser: string }) {
+    try {
+      //Verificar que el usuario existe
+      const user = await ITSGooseHandler.searchOne({
+        Model: UserModel,
+        condition: { _id: idUser },
+      });
+
+      if (!user) return { error: "User not found" };
+
+      await ITSGooseHandler.removeDocuments({
+        Model: ActivateCodeModel,
+        condition: { idUser },
+      });
+
+      //Ahora hay que borrar los grupos del usuario
+      const groups = await GroupsModelClass.getGroupsByUserId({ idUser });
+
+      if (groups.length > 0) {
+        await Promise.all(
+          groups.map(async (group) => {
+            await GroupsModelClass.deleteGroupAndContacts({
+              idGroup: group.id,
+            });
+          })
+        );
+      }
+
+      const resultUser = await ITSGooseHandler.removeDocument({
+        Model: UserModel,
+        id: idUser,
+      });
+
+      return resultUser;
+    } catch (error) {
+      console.error(error);
+      return { error };
+    }
+  }
+
   static async obtainUsers() {
     try {
       const data = await ITSGooseHandler.searchAll({ Model: UserModel });

@@ -333,6 +333,23 @@ class AuthController {
       throw new Error(`Error in login. New error: ${error}`);
     }
   }
+
+  public static logout = (_req: Request, res: Response) =>
+    res.json({ message: "Logout" });
+
+  public static async deleteAccount(req: Request, res: Response) {
+    try {
+      const { idUser } = req as any;
+
+      const result = await UserModelClass.deleteAccount({ idUser });
+
+      if (result) return res.json({ message: "Account deleted successfully" });
+
+      return res.json({ error: "Error deleting account" });
+    } catch (error) {
+      return res.json({ error: "Error deleting account" });
+    }
+  }
 }
 
 export default AuthController;

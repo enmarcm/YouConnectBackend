@@ -123,6 +123,24 @@ class TSGooseHandler implements TSGooseHandlerProps {
     }
   }
 
+  async removeDocuments<T>({
+    Model,
+    condition,
+  }: {
+    Model: ReturnModelType<ClazzT<T>>;
+    condition: Partial<T>;
+  }) {
+    try {
+      const result = await Model.deleteMany(condition);
+      return result;
+    } catch (error) {
+      console.error(error);
+      return {
+        error: `Error removing documents from model ${Model.modelName}`,
+      };
+    }
+  }
+
   /**
    * Edit a document in a model by its ID with the new data
    */

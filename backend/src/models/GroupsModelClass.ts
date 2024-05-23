@@ -60,11 +60,10 @@ export default class GroupsModelClass {
 
   static async deleteGroup({ id }: { id: string }) {
     try {
-      const group = await ITSGooseHandler.removeDocument({
-        Model: GroupModel,
-        id,
+      const result = await GroupsModelClass.deleteGroupAndContacts({
+        idGroup: id,
       });
-      return group;
+      return result;
     } catch (error) {
       console.error(
         `Error deleting group: ${error} in deleteGroup method in GroupsModelClass.ts`
@@ -251,6 +250,45 @@ export default class GroupsModelClass {
         `Error removing group contacts: ${error} in removeGroupContacts method in GroupsModelClass.ts`
       );
       throw new Error(`Error removing group contacts: ${error}`);
+    }
+  }
+
+  //TODO: PROBAR ESTE METODO Y SI FUNCIONA, BORRAR EL METODO removeGroupContacts
+  static async deleteGroupAndContacts({
+    idGroup,
+  }: {
+    idGroup: string;
+  }) {
+    try {
+      // Get all contacts of the group from the groupcontact collection
+      const groupContacts = await ITSGooseHandler.searchRelations({
+        Model: GroupContactModel,
+        id: idGroup,
+        relationField: "idGroup",
+      });
+
+      // Delete all contacts of the group from the groupcontact collection
+      await Promise.all(
+        groupContacts.map((groupContact: any) =>
+          ITSGooseHandler.removeDocument({
+            Model: GroupContactModel,
+            id: groupContact.id,
+          })
+        )
+      );
+
+      // Delete the group
+      const group = await ITSGooseHandler.removeDocument({
+        Model: GroupModel,
+        id: idGroup,
+      });
+
+      return group;
+    } catch (error) {
+      console.error(
+        `Error deleting group and contacts: ${error} in deleteGroupAndContacts method in GroupsModelClass.ts`
+      );
+      throw new Error(`Error deleting group and contacts: ${error}`);
     }
   }
 }
