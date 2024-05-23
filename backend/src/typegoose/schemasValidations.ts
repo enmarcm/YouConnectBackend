@@ -56,8 +56,10 @@ export class ContactValidations {
   });
 
   static numberValidate = () => ({
-    validator: (v: string) => /^\+?[1-9]\d{1,14}$/.test(v),
-    message: "Number must be a valid international phone number.",
+    validator: (v: Array<string>) =>
+      v.length > 0 && v.every((num) => /^\+?[1-9]\d{1,14}$/.test(num)),
+    message:
+      "Each number must be a valid international phone number and there must be at least one number.",
   });
 
   static imageValidate = () => ({

@@ -89,7 +89,7 @@ export interface ContactInterface {
   _id?: string;
   id?: string;
   name: string;
-  number: string; //TODO: FALTA QUE AGARRE VARIOS NUMEROS
+  number: string[]; //TODO: FALTA QUE AGARRE VARIOS NUMEROS
   image?: string;
   idUser: string;
   email?: string;

@@ -50,9 +50,18 @@ class ContactModelClass {
 
   static async createContact(contact: ContactInterface) {
     try {
+      const numbers = Array.isArray(contact.number)
+        ? contact.number
+        : [contact.number];
+
+      const contactParsed: ContactInterface = {
+        ...contact,
+        number: numbers,
+      };
+
       const newContact = await ITSGooseHandler.addDocument({
         Model: ContactModel,
-        data: contact,
+        data: contactParsed,
       });
 
       if ("error" in newContact)
@@ -69,10 +78,19 @@ class ContactModelClass {
 
   static async updateContactById({ id, contact }: UpdateContactModelInterface) {
     try {
+      const numbers = Array.isArray(contact.number)
+        ? contact.number
+        : [contact.number];
+
+      const contactParsed: ContactInterface = {
+        ...contact,
+        number: numbers,
+      };
+
       const updatedContact = await ITSGooseHandler.editDocument({
         Model: ContactModel,
         id,
-        newData: contact,
+        newData: contactParsed,
       });
       return updatedContact;
     } catch (error) {
@@ -128,12 +146,12 @@ class ContactModelClass {
   }: {
     idUser: string;
     name: string;
-    number: string;
+    number: string[];
   }) {
     try {
       const contact = await ITSGooseHandler.searchOne({
         Model: ContactModel,
-        condition: { idUser, $or: [{ name }, { number }] },
+        condition: { idUser, $or: [{ name }, { number: { $in: number } }] },
       });
 
       return contact;

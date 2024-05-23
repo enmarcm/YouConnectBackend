@@ -99,10 +99,10 @@ export class Contact {
 
   @prop({
     required: true,
-    type: String,
+    type: [String],
     validate: ContactValidations.numberValidate(),
   })
-  public number!: string | Array<string>;
+  public number!: Array<string>;
 
   @prop({ ref: User, required: true, type: String })
   public idUser!: Ref<User>;

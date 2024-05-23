@@ -350,6 +350,29 @@ class AuthController {
       return res.json({ error: "Error deleting account" });
     }
   }
+
+  public static async editUser(req: Request, res: Response) {
+    try {
+      const { idUser } = req as any;
+
+      const userData = req.body;
+
+      const updatedUser = await UserModelClass.editUser({
+        id: idUser,
+        userData,
+      });
+
+      if (updatedUser.error)
+        return res.status(400).json({ error: updatedUser.error });
+
+      return res.status(200).json(updatedUser);
+    } catch (error) {
+      console.error(error);
+      return res
+        .status(500)
+        .json({ error: "An error occurred while editing the user." });
+    }
+  }
 }
 
 export default AuthController;

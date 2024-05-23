@@ -9,18 +9,20 @@ class ContactController {
   }
 
   static async createContact(req: Request, res: Response) {
-    //TODO: HAY QUE HACER UN METODO PARA VERIFICAR QUE NO EXISTE YA
     try {
       const { body, idUser } = req as any;
 
-      const {
+      let {
         name,
         email,
         number,
         image = Constants.IMAGE_DEFAULT,
       } = body as ContactInterface;
 
-      //Verify if contact name or number already exists in the same user
+      // Ensure number is an array
+      number = Array.isArray(number) ? number : [number];
+
+      // Verify if contact name or number already exists in the same user
       await ContactController.verifyContactUniqueness({ idUser, name, number });
 
       const newContact = await ContactModelClass.createContact({
@@ -35,7 +37,6 @@ class ContactController {
         message: "Created new contact successfully",
         newContact,
       });
-      return newContact;
     } catch (error) {
       console.error(`Error creating contact: ${error}`);
       return res
@@ -79,6 +80,11 @@ class ContactController {
       const { body } = req;
 
       const { id, contact } = body;
+
+      // Ensure number is an array
+      contact.number = Array.isArray(contact.number)
+        ? contact.number
+        : [contact.number];
 
       const updatedContact = await ContactModelClass.updateContactById({
         id,
@@ -169,9 +175,12 @@ class ContactController {
   }: {
     idUser: string;
     name: string;
-    number: string;
+    number: string | string[];
   }) {
     try {
+      // Ensure number is an array
+      number = Array.isArray(number) ? number : [number];
+
       const existingContact =
         await ContactModelClass.getContactByUserAndNameOrNumber({
           idUser,

@@ -241,6 +241,27 @@ class UserModelClass {
       throw new Error(`Error generating token. Error ${error}`);
     }
   }
+
+  static async editUser({
+    id,
+    userData,
+  }: {
+    id: string;
+    userData: Partial<UserInterface>;
+  }) {
+    try {
+      const updatedUser = await ITSGooseHandler.editDocument({
+        Model: UserModel,
+        id,
+        newData: userData,
+      });
+
+      return updatedUser;
+    } catch (error) {
+      console.error(error);
+      throw new Error(`Error editing user. Error ${error}`);
+    }
+  }
 }
 
 export default UserModelClass;
