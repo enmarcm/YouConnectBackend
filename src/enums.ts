@@ -1,3 +1,5 @@
+import { BASE_URL } from "./constants";
+
 export enum Routes {
   MAIN = "/",
   AUTH = "/auth",
@@ -6,9 +8,9 @@ export enum Routes {
   PROFILE = "/profile",
 }
 
-export enum URLS {
-  MAIN = "http://localhost:7878",
-  ACTIVATE_USER = `${URLS.MAIN}/auth/activateUser`,
+export const URLS = {
+  MAIN: BASE_URL,
+  ACTIVATE_USER: `${BASE_URL}/auth/activateUser`,
 }
 
 export enum Constants {

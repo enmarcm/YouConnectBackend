@@ -17,11 +17,17 @@ export const Hosts: Record<string, HostConfig> = {
   },
 };
 
-
 export const ERROR_HANDLERS: Record<string, ErrorHandler> = {
-  CastError: (res: Response) => res.status(400).json({ error: "Malformatted ID" }),
-  ValidationError: (res: Response) => res.status(409).json({ error: "Validation error" }),
-  JsonWebTokenError: (res: Response, message?: string) => res.status(401).json({ error: "Invalid token", message }),
-  TokenExpiredError: (res: Response, message?: string) => res.status(401).json({ error: "Expired token", message }),
-  defaultError: (res: Response) => res.status(500).json({ error: "Something went wrong" }),
+  CastError: (res: Response) =>
+    res.status(400).json({ error: "Malformatted ID" }),
+  ValidationError: (res: Response) =>
+    res.status(409).json({ error: "Validation error" }),
+  JsonWebTokenError: (res: Response, message?: string) =>
+    res.status(401).json({ error: "Invalid token", message }),
+  TokenExpiredError: (res: Response, message?: string) =>
+    res.status(401).json({ error: "Expired token", message }),
+  defaultError: (res: Response) =>
+    res.status(500).json({ error: "Something went wrong" }),
 };
+
+export const BASE_URL:string = process.env.BASE_URL || `http://localhost:${PORT}`;
