@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const groupController_1 = __importDefault(require("../controllers/groupController"));
+const middlewares_1 = require("../middlewares/middlewares");
+const groupRouter = (0, express_1.Router)();
+groupRouter.get("/view/all", groupController_1.default.viewAllGroups);
+groupRouter.get("/view/allByUser", groupController_1.default.getGroupsByUser);
+groupRouter.get("/view/allByUser/:id", groupController_1.default.getGroupsByUser);
+groupRouter.get("/view/allByContact/:idContact", middlewares_1.midValidateId, groupController_1.default.getGroupsByContactId);
+groupRouter.get("/view/one/:id", middlewares_1.midValidateId, groupController_1.default.getInfoGroup);
+groupRouter.post("/create", groupController_1.default.createGroup);
+groupRouter.post("/addContact", middlewares_1.midValidateId, groupController_1.default.addContactToGroup);
+groupRouter.delete("/delete/:id", middlewares_1.midValidateId, groupController_1.default.deleteGroup);
+groupRouter.delete("/deleteContact/:id", groupController_1.default.removeContactFromGroup);
+groupRouter.put("/update/:id", middlewares_1.midValidateId, groupController_1.default.updateGroup);
+exports.default = groupRouter;

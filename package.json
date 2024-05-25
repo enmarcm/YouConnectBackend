@@ -2,11 +2,13 @@
   "name": "you-connect-backend",
   "version": "0.0.0",
   "description": "Backend of YouConnect Mobile App",
-  "main": "index.js",
+  "main": "./build/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
-    "dev": "ts-node-dev src/app.ts"
+    "dev": "ts-node-dev src/app.ts",
+    "build": "npm run tsc",
+    "start": "node ./build/app.js"
   },
   "author": "Enmanuel Colina & Miguel Guillen",
   "license": "ISC",
