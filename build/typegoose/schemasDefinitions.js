@@ -99,7 +99,7 @@ __decorate([
 __decorate([
     (0, typegoose_1.prop)({
         required: true,
-        type: [String],
+        type: (Array),
         validate: schemasValidations_1.ContactValidations.numberValidate(),
     })
 ], Contact.prototype, "number", void 0);
