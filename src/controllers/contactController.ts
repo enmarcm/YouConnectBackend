@@ -20,7 +20,8 @@ class ContactController {
       } = body as ContactInterface;
 
       // Ensure number is an array
-      console.log(number)
+      console.log(body)
+      
       const newNumber = Array.isArray(number) ? number : [number];
 
       // Verify if contact name or number already exists in the same user
