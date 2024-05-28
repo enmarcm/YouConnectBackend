@@ -99,7 +99,7 @@ export class Contact {
 
   @prop({
     required: true,
-    type: Array<String>,
+    type: [String],
     validate: ContactValidations.numberValidate(),
   })
   public number!: Array<string>;
