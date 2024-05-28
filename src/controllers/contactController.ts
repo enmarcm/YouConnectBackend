@@ -12,7 +12,7 @@ class ContactController {
     try {
       const { body, idUser } = req as any;
 
-      let {
+      const {
         name,
         email,
         number,
@@ -20,16 +20,16 @@ class ContactController {
       } = body as ContactInterface;
 
       // Ensure number is an array
-      number = Array.isArray(number) ? number : [number];
+      const newNumber = Array.isArray(number) ? number : [number];
 
       // Verify if contact name or number already exists in the same user
-      await ContactController.verifyContactUniqueness({ idUser, name, number });
+      await ContactController.verifyContactUniqueness({ idUser, name, number: newNumber });
 
       const newContact = await ContactModelClass.createContact({
         idUser,
         name,
         email,
-        number,
+        number: newNumber,
         image,
       });
 
