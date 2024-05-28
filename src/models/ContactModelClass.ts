@@ -60,11 +60,12 @@ class ContactModelClass {
         number: numbers,
       };
 
+      
       const newContact = await ITSGooseHandler.addDocument({
         Model: ContactModel,
         data: contactParsed,
       });
-
+      
       if ("error" in newContact)
         throw new Error(`Error creating contact: ${newContact.error}`);
 

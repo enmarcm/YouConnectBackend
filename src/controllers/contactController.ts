@@ -19,10 +19,9 @@ class ContactController {
         image = Constants.IMAGE_DEFAULT,
       } = body as ContactInterface;
 
+
       // Ensure number is an array      
       const newNumber = Array.isArray(number) ? number : [number];
-
-      
 
       // Verify if contact name or number already exists in the same user
       await ContactController.verifyContactUniqueness({ idUser, name, number: newNumber });
