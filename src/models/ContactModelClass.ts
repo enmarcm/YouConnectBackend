@@ -50,9 +50,19 @@ class ContactModelClass {
 
   static async createContact(contact: ContactInterface) {
     try {
+
+      const numbers = Array.isArray(contact.number)
+        ? contact.number
+        : [contact.number];
+
+      const contactParsed: ContactInterface = {
+        ...contact,
+        number: numbers,
+      };
+
       const newContact = await ITSGooseHandler.addDocument({
         Model: ContactModel,
-        data: contact,
+        data: contactParsed,
       });
 
       if ("error" in newContact)
