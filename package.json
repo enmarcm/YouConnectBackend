@@ -21,7 +21,7 @@
     "typescript": "5.4.5"
   },
   "dependencies": {
-    "@typegoose/typegoose": "^12.4.0",
+    "@typegoose/typegoose": "^12.5.0",
     "@types/bcrypt": "^5.0.2",
     "@types/crypto-js": "4.2.2",
     "@types/nodemailer": "6.4.15",
