@@ -178,12 +178,14 @@ class TSGooseHandler implements TSGooseHandlerProps {
   async searchId<T>({ Model, id, transform }: SearchIdParams<T>) {
     try {
       const document = await Model.findById(id, transform);
+      if (!document) {
+        console.log(`No document found in model ${Model.modelName} with id ${id}`);
+        return null;
+      }
       return document;
     } catch (error) {
-      console.error(error);
-      return {
-        error: `Error searching for document in model ${Model.modelName}`,
-      };
+      console.error(`Error searching for document in model ${Model.modelName}: ${error}`);
+      return null;
     }
   }
 
@@ -212,13 +214,14 @@ class TSGooseHandler implements TSGooseHandlerProps {
     onlyId = false,
     idField = "id",
     transform,
-  }: SearchRelationsParams<T>) {
+    lean = false
+  }: SearchRelationsParams<T> & { lean?: boolean }) { // Añadir a la interfaz
     try {
       const query = id ? { [relationField]: id } : {};
 
       let documents = onlyId
-        ? await Model.find(query).populate(relationField, idField)
-        : await Model.find(query).populate(relationField);
+        ? await Model.find(query).populate(relationField, idField).lean(lean)
+        : await Model.find(query).populate(relationField).lean(lean);
 
       if (onlyId) {
         documents = documents.map((doc: any) => ({

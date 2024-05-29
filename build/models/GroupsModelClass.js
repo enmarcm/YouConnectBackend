@@ -116,6 +116,7 @@ class GroupsModelClass {
                     Model: models_1.GroupContactModel,
                     id: idContact,
                     relationField: "idContact",
+                    lean: true
                 });
                 if (groupContacts.length === 0 || "error" in groupContacts)
                     return [];
@@ -127,7 +128,13 @@ class GroupsModelClass {
                         id: groupContact.idGroup,
                     });
                 }));
-                return groups;
+                // Filtrar los resultados undefined
+                const filteredGroups = groups.filter((group) => group !== undefined);
+                // Verificar si no se encontraron grupos
+                if (filteredGroups.length === 0) {
+                    throw new Error("No groups found for the provided contact id");
+                }
+                return filteredGroups;
             }
             catch (error) {
                 console.error(`Error getting all groups by contact id: ${error} in getGroupsByContactId method in GroupsModelClass.ts`);
@@ -202,7 +209,7 @@ class GroupsModelClass {
     }
     //TODO: PROBAR ESTE METODO Y SI FUNCIONA, BORRAR EL METODO removeGroupContacts
     static deleteGroupAndContacts(_a) {
-        return __awaiter(this, arguments, void 0, function* ({ idGroup, }) {
+        return __awaiter(this, arguments, void 0, function* ({ idGroup }) {
             try {
                 // Get all contacts of the group from the groupcontact collection
                 const groupContacts = yield instances_1.ITSGooseHandler.searchRelations({

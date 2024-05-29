@@ -189,13 +189,15 @@ class TSGooseHandler {
         return __awaiter(this, arguments, void 0, function* ({ Model, id, transform }) {
             try {
                 const document = yield Model.findById(id, transform);
+                if (!document) {
+                    console.log(`No document found in model ${Model.modelName} with id ${id}`);
+                    return null;
+                }
                 return document;
             }
             catch (error) {
-                console.error(error);
-                return {
-                    error: `Error searching for document in model ${Model.modelName}`,
-                };
+                console.error(`Error searching for document in model ${Model.modelName}: ${error}`);
+                return null;
             }
         });
     }
@@ -220,12 +222,12 @@ class TSGooseHandler {
      * Search for all documents in a model and their relations
      */
     searchRelations(_a) {
-        return __awaiter(this, arguments, void 0, function* ({ Model, id, relationField, onlyId = false, idField = "id", transform, }) {
+        return __awaiter(this, arguments, void 0, function* ({ Model, id, relationField, onlyId = false, idField = "id", transform, lean = false }) {
             try {
                 const query = id ? { [relationField]: id } : {};
                 let documents = onlyId
-                    ? yield Model.find(query).populate(relationField, idField)
-                    : yield Model.find(query).populate(relationField);
+                    ? yield Model.find(query).populate(relationField, idField).lean(lean)
+                    : yield Model.find(query).populate(relationField).lean(lean);
                 if (onlyId) {
                     documents = documents.map((doc) => (Object.assign(Object.assign({}, doc.toObject()), { [relationField]: doc[relationField][idField] })));
                 }

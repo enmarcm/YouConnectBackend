@@ -128,6 +128,7 @@ export default class GroupsModelClass {
           Model: GroupContactModel,
           id: idContact,
           relationField: "idContact",
+          lean: true
         });
 
       if (groupContacts.length === 0 || "error" in groupContacts) return [];
