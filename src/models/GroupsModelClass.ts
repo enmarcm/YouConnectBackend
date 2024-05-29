@@ -142,7 +142,15 @@ export default class GroupsModelClass {
         })
       );
 
-      return groups;
+      // Filtrar los resultados undefined
+      const filteredGroups = groups.filter((group) => group !== undefined);
+
+      // Verificar si no se encontraron grupos
+      if (filteredGroups.length === 0) {
+        throw new Error("No groups found for the provided contact id");
+      }
+
+      return filteredGroups;
     } catch (error) {
       console.error(
         `Error getting all groups by contact id: ${error} in getGroupsByContactId method in GroupsModelClass.ts`
@@ -254,11 +262,7 @@ export default class GroupsModelClass {
   }
 
   //TODO: PROBAR ESTE METODO Y SI FUNCIONA, BORRAR EL METODO removeGroupContacts
-  static async deleteGroupAndContacts({
-    idGroup,
-  }: {
-    idGroup: string;
-  }) {
+  static async deleteGroupAndContacts({ idGroup }: { idGroup: string }) {
     try {
       // Get all contacts of the group from the groupcontact collection
       const groupContacts = await ITSGooseHandler.searchRelations({
