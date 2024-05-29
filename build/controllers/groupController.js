@@ -238,5 +238,20 @@ class GroupController {
             }
         });
     }
+    static getContactsByGroupId(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { idGroup } = req.params;
+                const contacts = yield GroupsModelClass_1.default.getContactsByGroupId({ idGroup });
+                return res.status(200).json(contacts);
+            }
+            catch (error) {
+                console.error(`Error getting contacts by group id: ${error}`);
+                return res
+                    .status(500)
+                    .json({ error: "Error getting contacts by group id" });
+            }
+        });
+    }
 }
 exports.default = GroupController;

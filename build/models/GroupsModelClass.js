@@ -235,5 +235,38 @@ class GroupsModelClass {
             }
         });
     }
+    static getContactsByGroupId(_a) {
+        return __awaiter(this, arguments, void 0, function* ({ idGroup }) {
+            try {
+                const groupContacts = yield instances_1.ITSGooseHandler.searchRelations({
+                    Model: models_1.GroupContactModel,
+                    id: idGroup,
+                    relationField: "idGroup",
+                    lean: true
+                });
+                if (groupContacts.length === 0 || "error" in groupContacts)
+                    return [];
+                const contacts = yield Promise.all(groupContacts.map((groupContact) => {
+                    if (!groupContact.idContact)
+                        return;
+                    return instances_1.ITSGooseHandler.searchId({
+                        Model: models_1.ContactModel,
+                        id: groupContact.idContact,
+                    });
+                }));
+                // Filtrar los resultados undefined
+                const filteredContacts = contacts.filter((contact) => contact !== undefined);
+                // Verificar si no se encontraron contactos
+                if (filteredContacts.length === 0) {
+                    throw new Error("No contacts found for the provided group id");
+                }
+                return filteredContacts;
+            }
+            catch (error) {
+                console.error(`Error getting all contacts by group id: ${error} in getContactsByGroupId method in GroupsModelClass.ts`);
+                throw new Error(`Error getting all contacts by group id: ${error}`);
+            }
+        });
+    }
 }
 exports.default = GroupsModelClass;

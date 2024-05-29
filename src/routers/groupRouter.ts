@@ -9,6 +9,8 @@ groupRouter.get("/view/all", GroupController.viewAllGroups);
 groupRouter.get("/view/allByUser", GroupController.getGroupsByUser);
 groupRouter.get("/view/allByUser/:id", GroupController.getGroupsByUser);
 
+groupRouter.get('/view/allByGroup/:idGroup', midValidateId, GroupController.getContactsByGroupId);
+
 groupRouter.get(
   "/view/allByContact/:idContact",
   midValidateId,

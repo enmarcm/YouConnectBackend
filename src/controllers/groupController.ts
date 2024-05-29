@@ -244,4 +244,17 @@ export default class GroupController {
         .json({ error: "Error removing contact from group" });
     }
   }
+
+  static async getContactsByGroupId(req: Request, res: Response) {
+    try {
+      const { idGroup } = req.params as any;
+      const contacts = await GroupsModelClass.getContactsByGroupId({ idGroup });
+      return res.status(200).json(contacts);
+    } catch (error) {
+      console.error(`Error getting contacts by group id: ${error}`);
+      return res
+        .status(500)
+        .json({ error: "Error getting contacts by group id" });
+    }
+  }
 }

@@ -10,6 +10,7 @@ const groupRouter = (0, express_1.Router)();
 groupRouter.get("/view/all", groupController_1.default.viewAllGroups);
 groupRouter.get("/view/allByUser", groupController_1.default.getGroupsByUser);
 groupRouter.get("/view/allByUser/:id", groupController_1.default.getGroupsByUser);
+groupRouter.get('/view/allByGroup/:idGroup', middlewares_1.midValidateId, groupController_1.default.getContactsByGroupId);
 groupRouter.get("/view/allByContact/:idContact", middlewares_1.midValidateId, groupController_1.default.getGroupsByContactId);
 groupRouter.get("/view/one/:id", middlewares_1.midValidateId, groupController_1.default.getInfoGroup);
 groupRouter.post("/create", groupController_1.default.createGroup);

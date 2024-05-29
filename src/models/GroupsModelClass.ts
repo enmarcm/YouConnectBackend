@@ -1,4 +1,4 @@
-import { GroupContactModel, GroupModel } from "../typegoose/models";
+import { ContactModel, GroupContactModel, GroupModel } from "../typegoose/models";
 import { ITSGooseHandler } from "../data/instances";
 import { GroupContactData, GroupInterfaceData } from "../types";
 
@@ -294,6 +294,45 @@ export default class GroupsModelClass {
         `Error deleting group and contacts: ${error} in deleteGroupAndContacts method in GroupsModelClass.ts`
       );
       throw new Error(`Error deleting group and contacts: ${error}`);
+    }
+  }
+
+  static async getContactsByGroupId({ idGroup }: { idGroup: string }) {
+    try {
+      const groupContacts: GroupContactData[] =
+        await ITSGooseHandler.searchRelations({
+          Model: GroupContactModel,
+          id: idGroup,
+          relationField: "idGroup",
+          lean: true
+        });
+
+      if (groupContacts.length === 0 || "error" in groupContacts) return [];
+
+      const contacts = await Promise.all(
+        groupContacts.map((groupContact: GroupContactData) => {
+          if (!groupContact.idContact) return;
+          return ITSGooseHandler.searchId({
+            Model: ContactModel,
+            id: groupContact.idContact,
+          });
+        })
+      );
+
+      // Filtrar los resultados undefined
+      const filteredContacts = contacts.filter((contact) => contact !== undefined);
+
+      // Verificar si no se encontraron contactos
+      if (filteredContacts.length === 0) {
+        throw new Error("No contacts found for the provided group id");
+      }
+
+      return filteredContacts;
+    } catch (error) {
+      console.error(
+        `Error getting all contacts by group id: ${error} in getContactsByGroupId method in GroupsModelClass.ts`
+      );
+      throw new Error(`Error getting all contacts by group id: ${error}`);
     }
   }
 }
