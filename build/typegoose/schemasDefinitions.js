@@ -136,5 +136,5 @@ __decorate([
     (0, typegoose_1.prop)({ default: Date.now, type: Date })
 ], ActivateCode.prototype, "createdAt", void 0);
 __decorate([
-    (0, typegoose_1.prop)({ expires: 7200, type: Date })
+    (0, typegoose_1.prop)({ expires: 12000, type: Date })
 ], ActivateCode.prototype, "expireAt", void 0);

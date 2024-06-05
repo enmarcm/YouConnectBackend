@@ -134,6 +134,6 @@ export class ActivateCode {
   @prop({ default: Date.now, type: Date })
   public createdAt?: Date;
 
-  @prop({ expires: 7200, type: Date })
+  @prop({ expires: 12000, type: Date })
   public expireAt?: Date;
 }
