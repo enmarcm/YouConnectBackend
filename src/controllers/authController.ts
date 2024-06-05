@@ -154,6 +154,7 @@ class AuthController {
         message: "User registered successfully, please activate your account",
       });
     } catch (error) {
+      console.error(`Error registering user: ${error}`);
       return res.status(400).json({ error: (error as Error).message });
     }
   }

@@ -139,6 +139,7 @@ class AuthController {
                 });
             }
             catch (error) {
+                console.error(`Error registering user: ${error}`);
                 return res.status(400).json({ error: error.message });
             }
         });
