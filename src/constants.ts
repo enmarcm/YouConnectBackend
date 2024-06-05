@@ -30,4 +30,5 @@ export const ERROR_HANDLERS: Record<string, ErrorHandler> = {
     res.status(500).json({ error: "Something went wrong" }),
 };
 
-export const BASE_URL:string = process.env.BASE_URL || `http://localhost:${PORT}`;
+// export const BASE_URL:string = process.env.BASE_URL || `http://localhost:${PORT}`;
+export const BASE_URL:string = process.env.BASE_URL || `http://192.168.3.106:${PORT}`;

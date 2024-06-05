@@ -22,4 +22,5 @@ exports.ERROR_HANDLERS = {
     TokenExpiredError: (res, message) => res.status(401).json({ error: "Expired token", message }),
     defaultError: (res) => res.status(500).json({ error: "Something went wrong" }),
 };
-exports.BASE_URL = process.env.BASE_URL || `http://localhost:${exports.PORT}`;
+// export const BASE_URL:string = process.env.BASE_URL || `http://localhost:${PORT}`;
+exports.BASE_URL = process.env.BASE_URL || `http://192.168.3.106:${exports.PORT}`;

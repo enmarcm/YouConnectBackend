@@ -5,7 +5,8 @@ const REGISTER_VALIDATORS: { [key: string]: ValidatorFunction } = {
     typeof v === "string" && /^[a-zA-Z0-9]{6,10}$/.test(v),
   email: (v: string | Date) => typeof v === "string" && /\S+@\S+\.\S+/.test(v),
   password: (v: string | Date) =>
-    typeof v === "string" && /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,12}$/.test(v),
+    typeof v === "string" &&
+    /^(?=.*[A-Z])(?=.*\d)(?=.*[@])[A-Za-z\d@]{8,20}$/.test(v),
   dateOfBirth: (v: string | Date) => {
     if (typeof v === "string") {
       v = new Date(v);
