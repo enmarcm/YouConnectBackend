@@ -131,9 +131,8 @@ class AuthController {
                     userData: data === null || data === void 0 ? void 0 : data.data,
                     code: data === null || data === void 0 ? void 0 : data.code,
                 });
-                if (!isMailSent) {
+                if (!isMailSent)
                     throw new Error("Error sending verification mail");
-                }
                 return res.status(201).json({
                     message: "User registered successfully, please activate your account",
                 });

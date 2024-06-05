@@ -146,9 +146,7 @@ class AuthController {
         userData: data?.data,
         code: data?.code,
       });
-      if (!isMailSent) {
-        throw new Error("Error sending verification mail");
-      }
+      if (!isMailSent) throw new Error("Error sending verification mail");
 
       return res.status(201).json({
         message: "User registered successfully, please activate your account",
