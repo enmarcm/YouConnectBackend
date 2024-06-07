@@ -32,7 +32,6 @@ function midToken(req, res, next) {
             if (!token) {
                 return res.status(401).json({ message: "Token not found" });
             }
-            // Agregar información del usuario al objeto req
             req.idUser = user.id;
             req.username = user.userName;
             req.email = user.email;

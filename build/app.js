@@ -19,7 +19,7 @@ app.use(middlewares_1.midConnectDB);
 //{ Routes
 app.use(enums_1.Routes.MAIN, allRouters_1.default.mainRouter);
 app.use(enums_1.Routes.AUTH, allRouters_1.default.authRouter);
-// app.use(midToken);
+app.use(middlewares_1.midToken);
 app.use(enums_1.Routes.CONTACT, middlewares_1.midToken, allRouters_1.default.contactRouter);
 app.use(enums_1.Routes.GROUP, middlewares_1.midToken, allRouters_1.default.groupRouter);
 app.use(enums_1.Routes.PROFILE, middlewares_1.midToken, allRouters_1.default.profileRouter);

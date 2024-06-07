@@ -27,7 +27,7 @@ app.use(midConnectDB);
 app.use(Routes.MAIN, R.mainRouter);
 app.use(Routes.AUTH, R.authRouter);
 
-// app.use(midToken);
+app.use(midToken);
 app.use(Routes.CONTACT, midToken, R.contactRouter);
 app.use(Routes.GROUP, midToken, R.groupRouter);
 app.use(Routes.PROFILE, midToken, R.profileRouter);
