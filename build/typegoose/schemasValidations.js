@@ -47,8 +47,8 @@ ContactValidations.emailValidate = () => ({
     message: "Email is not valid!",
 });
 ContactValidations.numberValidate = () => ({
-    validator: (v) => v.length > 0 && v.every((num) => /^\+?[1-9]\d{1,14}$/.test(num)),
-    message: "Each number must be a valid international phone number and there must be at least one number.",
+    validator: (v) => v.length > 0 && v.every((num) => /^(\+?\d{1,4})?(\(?\d{1,4}\)?[\s-]?)?[\d\s-]{3,10}(\*?\d+)?$/.test(num)),
+    message: "Each number must be a valid phone number and there must be at least one number.",
 });
 ContactValidations.imageValidate = () => ({
     validator: (v) => /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(v),
