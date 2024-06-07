@@ -176,7 +176,7 @@ class ContactController {
             }
             catch (error) {
                 console.error(`Error verifying contact uniqueness: ${error}. In verifyContactUniqueness method in ContactController.ts`);
-                throw new Error(`Error verifying contact uniqueness: ${error}`);
+                throw new Error(`Contact or phone aready exist`);
             }
         });
     }
