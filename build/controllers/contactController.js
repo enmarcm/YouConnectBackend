@@ -44,7 +44,7 @@ class ContactController {
             catch (error) {
                 console.error(`Error creating contact: ${error}`);
                 return res
-                    .status(500)
+                    .status(400)
                     .json({ error: `Error creating contact: ${error}` });
             }
         });
@@ -61,7 +61,7 @@ class ContactController {
             catch (error) {
                 console.error(`Error getting contact by id: ${error}`);
                 return res
-                    .status(500)
+                    .status(400)
                     .json({ error: `Error getting contact by id: ${error}` });
             }
         });
@@ -75,7 +75,7 @@ class ContactController {
             catch (error) {
                 console.error(`Error getting all contacts: ${error}`);
                 return res
-                    .status(500)
+                    .status(400)
                     .json({ error: `Error getting all contacts: ${error}` });
             }
         });
@@ -100,7 +100,7 @@ class ContactController {
             catch (error) {
                 console.error(`Error updating contact: ${error}`);
                 return res
-                    .status(500)
+                    .status(400)
                     .json({ error: `Error updating contact: ${error}` });
             }
         });
@@ -120,7 +120,7 @@ class ContactController {
             catch (error) {
                 console.error(`Error deleting contact: ${error}`);
                 return res
-                    .status(500)
+                    .status(400)
                     .json({ error: `Error deleting contact: ${error}` });
             }
         });
@@ -141,7 +141,7 @@ class ContactController {
             catch (error) {
                 console.error(`Error getting contacts by user id: ${error}`);
                 return res
-                    .status(500)
+                    .status(400)
                     .json({ error: `Error getting contacts by user id: ${error}` });
             }
         });
