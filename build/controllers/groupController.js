@@ -149,12 +149,18 @@ class GroupController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const id = req.params.id;
-                //TODO: Validar que el ID recibido es correcto
+                // Validar que el ID recibido es correcto
                 if (!id.match(/^[0-9a-fA-F]{24}$/)) {
                     return res.status(400).json({ error: "Invalid ID format" });
                 }
+                // Obtener información del grupo
                 const group = yield GroupsModelClass_1.default.getInfoGroup({ id });
-                return res.json(group);
+                if (!group) {
+                    return res.status(404).json({ error: "Group not found" });
+                }
+                const contacts = yield GroupsModelClass_1.default.getContactsByGroupId({ idGroup: id });
+                const groupWithContacts = Object.assign(Object.assign({}, group), { contacts });
+                return res.json(groupWithContacts);
             }
             catch (error) {
                 console.error(`Error getting group info: ${error}`);
