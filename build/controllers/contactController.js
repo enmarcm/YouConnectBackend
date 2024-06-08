@@ -25,10 +25,14 @@ class ContactController {
             try {
                 const { body, idUser } = req;
                 const { name, email, number, image = enums_1.Constants.IMAGE_DEFAULT, } = body;
-                // Ensure number is an array      
+                // Ensure number is an array
                 const newNumber = Array.isArray(number) ? number : [number];
                 // Verify if contact name or number already exists in the same user
-                yield ContactController.verifyContactUniqueness({ idUser, name, number: newNumber });
+                yield ContactController.verifyContactUniqueness({
+                    idUser,
+                    name,
+                    number: newNumber,
+                });
                 const newContact = yield ContactModelClass_1.default.createContact({
                     idUser,
                     name,
