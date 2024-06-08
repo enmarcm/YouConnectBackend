@@ -342,7 +342,7 @@ class AuthController {
     static getUserInfo(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { idUser } = req; // Assuming idUser is passed in some way (e.g., query params, body, or headers)
+                const { idUser } = req;
                 // Fetch user information based on idUser
                 const userInfo = yield UserModelClass_1.default.getUserInfo({ idUser });
                 // Check if userInfo exists

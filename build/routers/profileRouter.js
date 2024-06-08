@@ -8,5 +8,5 @@ const authController_1 = __importDefault(require("../controllers/authController"
 const profileRouter = (0, express_1.Router)();
 profileRouter.delete("delete", authController_1.default.deleteAccount);
 profileRouter.put("update", authController_1.default.editUser);
-profileRouter.get("info/:id", authController_1.default.getUserInfo);
+profileRouter.get("info", authController_1.default.getUserInfo);
 exports.default = profileRouter;
