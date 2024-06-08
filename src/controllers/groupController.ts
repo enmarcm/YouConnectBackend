@@ -152,14 +152,26 @@ export default class GroupController {
   static async getInfoGroup(req: Request, res: Response) {
     try {
       const id = req.params.id;
-      //TODO: Validar que el ID recibido es correcto
 
+      // Validar que el ID recibido es correcto
       if (!id.match(/^[0-9a-fA-F]{24}$/)) {
         return res.status(400).json({ error: "Invalid ID format" });
       }
 
+      // Obtener información del grupo
       const group = await GroupsModelClass.getInfoGroup({ id });
-      return res.json(group);
+      if (!group) {
+        return res.status(404).json({ error: "Group not found" });
+      }
+
+      const contacts = await GroupsModelClass.getContactsByGroupId({ idGroup: id });
+
+      const groupWithContacts = {
+        ...group,
+        contacts,
+      };
+
+      return res.json(groupWithContacts);
     } catch (error) {
       console.error(`Error getting group info: ${error}`);
       return res.status(500).json({ error: "Error getting group info" });
