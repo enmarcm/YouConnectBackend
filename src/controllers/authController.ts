@@ -375,7 +375,7 @@ class AuthController {
 
   public static async getUserInfo(req: Request, res: Response) {
     try {
-      const { idUser } = req as any; // Assuming idUser is passed in some way (e.g., query params, body, or headers)
+      const { idUser } = req as any; 
 
       // Fetch user information based on idUser
       const userInfo = await UserModelClass.getUserInfo({ idUser });
