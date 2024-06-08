@@ -23,4 +23,4 @@ exports.ERROR_HANDLERS = {
     defaultError: (res) => res.status(500).json({ error: "Something went wrong" }),
 };
 // export const BASE_URL:string = process.env.BASE_URL || `http://localhost:${PORT}`;
-exports.BASE_URL = process.env.BASE_URL || `http://192.168.3.106:${exports.PORT}`;
+exports.BASE_URL = process.env.BASE_URL || `http://192.168.109.126:${exports.PORT}`;
