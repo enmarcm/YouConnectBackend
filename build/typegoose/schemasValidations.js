@@ -32,8 +32,8 @@ GroupValidation.nameValidate = () => ({
     message: "Name must be 1-20 characters long and contain only letters, numbers, and spaces.",
 });
 GroupValidation.descriptionValidate = () => ({
-    validator: (v) => /^.{1,200}$/.test(v),
-    message: "Description must be 1-200 characters long.",
+    validator: (v) => /^[a-zA-Z0-9\s]{1,200}$/.test(v),
+    message: "Description must be 1-200 characters long and contain only letters, numbers, and spaces.",
 });
 class ContactValidations {
 }

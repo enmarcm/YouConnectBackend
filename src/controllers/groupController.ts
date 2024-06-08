@@ -31,7 +31,9 @@ export default class GroupController {
   static async createGroup(req: Request, res: Response) {
     try {
       const { idUser } = req as any;
-      const { name, description, maxContacts = 50 } = req.body as any;
+      const { name, description, maxContacts = 50, contacts } = req.body as any;
+
+      console.log(req.body)
 
       const group = await GroupsModelClass.createGroup({
         name,
@@ -39,6 +41,17 @@ export default class GroupController {
         idUser,
         maxContacts,
       });
+
+      if (contacts) {
+        const contactsArray = Array.isArray(contacts) ? contacts : [contacts];
+
+        for (const idContact of contactsArray) {
+          await GroupsModelClass.addContactToGroup({
+            idGroup: group.id, 
+            idContact,
+          });
+        }
+      }
 
       return res.status(201).json(group);
     } catch (error) {
@@ -153,7 +166,6 @@ export default class GroupController {
     try {
       const id = req.params.id;
 
-      // Validar que el ID recibido es correcto
       if (!id.match(/^[0-9a-fA-F]{24}$/)) {
         return res.status(400).json({ error: "Invalid ID format" });
       }
@@ -164,7 +176,9 @@ export default class GroupController {
         return res.status(404).json({ error: "Group not found" });
       }
 
-      const contacts = await GroupsModelClass.getContactsByGroupId({ idGroup: id });
+      const contacts = await GroupsModelClass.getContactsByGroupId({ idGroup: group._id });
+
+      console.log(contacts)
 
       const groupWithContacts = {
         ...group,

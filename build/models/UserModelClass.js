@@ -250,5 +250,20 @@ class UserModelClass {
             }
         });
     }
+    static getUserInfo(_a) {
+        return __awaiter(this, arguments, void 0, function* ({ idUser }) {
+            try {
+                const user = yield instances_1.ITSGooseHandler.searchOne({
+                    Model: models_1.UserModel,
+                    condition: { _id: idUser },
+                });
+                return user;
+            }
+            catch (error) {
+                console.error(error);
+                return { error };
+            }
+        });
+    }
 }
 exports.default = UserModelClass;

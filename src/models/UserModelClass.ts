@@ -262,6 +262,20 @@ class UserModelClass {
       throw new Error(`Error editing user. Error ${error}`);
     }
   }
+
+  static async getUserInfo ({ idUser }: { idUser: string }) {
+    try {
+      const user = await ITSGooseHandler.searchOne({
+        Model: UserModel,
+        condition: { _id: idUser },
+      });
+
+      return user;
+    } catch (error) {
+      console.error(error);
+      return { error };
+    }
+  }
 }
 
 export default UserModelClass;

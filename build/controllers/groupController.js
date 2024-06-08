@@ -35,13 +35,23 @@ class GroupController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { idUser } = req;
-                const { name, description, maxContacts = 50 } = req.body;
+                const { name, description, maxContacts = 50, contacts } = req.body;
+                console.log(req.body);
                 const group = yield GroupsModelClass_1.default.createGroup({
                     name,
                     description,
                     idUser,
                     maxContacts,
                 });
+                if (contacts) {
+                    const contactsArray = Array.isArray(contacts) ? contacts : [contacts];
+                    for (const idContact of contactsArray) {
+                        yield GroupsModelClass_1.default.addContactToGroup({
+                            idGroup: group.id,
+                            idContact,
+                        });
+                    }
+                }
                 return res.status(201).json(group);
             }
             catch (error) {
@@ -149,7 +159,6 @@ class GroupController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const id = req.params.id;
-                // Validar que el ID recibido es correcto
                 if (!id.match(/^[0-9a-fA-F]{24}$/)) {
                     return res.status(400).json({ error: "Invalid ID format" });
                 }
@@ -158,7 +167,8 @@ class GroupController {
                 if (!group) {
                     return res.status(404).json({ error: "Group not found" });
                 }
-                const contacts = yield GroupsModelClass_1.default.getContactsByGroupId({ idGroup: id });
+                const contacts = yield GroupsModelClass_1.default.getContactsByGroupId({ idGroup: group._id });
+                console.log(contacts);
                 const groupWithContacts = Object.assign(Object.assign({}, group), { contacts });
                 return res.json(groupWithContacts);
             }

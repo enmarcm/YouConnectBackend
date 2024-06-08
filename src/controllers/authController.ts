@@ -372,6 +372,26 @@ class AuthController {
         .json({ error: "An error occurred while editing the user." });
     }
   }
+
+  public static async getUserInfo(req: Request, res: Response) {
+    try {
+      const { idUser } = req as any; // Assuming idUser is passed in some way (e.g., query params, body, or headers)
+
+      // Fetch user information based on idUser
+      const userInfo = await UserModelClass.getUserInfo({ idUser });
+
+      // Check if userInfo exists
+      if (!userInfo) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // If userInfo is found, return it
+      return res.status(200).json(userInfo);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "An error occurred while fetching the user information." });
+    }
+  }
 }
 
 export default AuthController;

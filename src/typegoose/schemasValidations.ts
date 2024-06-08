@@ -38,8 +38,8 @@ export class GroupValidation {
   });
 
   static descriptionValidate = () => ({
-    validator: (v: string) => /^.{1,200}$/.test(v),
-    message: "Description must be 1-200 characters long.",
+    validator: (v: string) => /^[a-zA-Z0-9\s]{1,200}$/.test(v),
+    message: "Description must be 1-200 characters long and contain only letters, numbers, and spaces.",
   });
 }
 
