@@ -1,6 +1,5 @@
 ﻿# YouConnectBackend :iphone: :link:
 
-!YouConnect Banner
 
 ## Description :page_facing_up:
 
